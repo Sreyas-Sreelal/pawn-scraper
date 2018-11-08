@@ -8,7 +8,7 @@ pub trait Natives {
 	fn parse_selector(&mut self,_:&AMX,string:String) -> AmxResult<Cell>;
 }
 
-impl Natives for super::PawnScraper{
+impl<'a,'b> Natives for super::PawnScraper<'a,'b>{
 	
 	fn parse_document(&mut self,_:&AMX,document:String) -> AmxResult<Cell> {
 		let parsed_data = Html::parse_document(&document);
