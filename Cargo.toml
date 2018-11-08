@@ -1,0 +1,12 @@
+[package]
+name = "PawnScraper"
+version = "0.1.0"
+authors = ["Sreyas <sreyassreelal@gmail.com>"]
+
+[lib]
+name = "PawnScraper"
+crate-type = ["dylib"]
+
+[dependencies]
+samp-sdk = "0.8.1"
+scraper  = "0.8.1"
