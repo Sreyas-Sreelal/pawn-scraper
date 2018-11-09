@@ -7,6 +7,7 @@ pub trait Natives {
 	fn parse_selector(&mut self,_:&AMX,string:String) -> AmxResult<Cell>;
 	fn get_nth_element_name(&mut self,_:&AMX,docid:usize, selectorid:usize,idx:usize,string:&mut Cell,size:usize) -> AmxResult<Cell>;
 	fn get_nth_element_text(&mut self,_:&AMX,docid:usize, selectorid:usize,idx:usize,string:&mut Cell,size:usize) -> AmxResult<Cell>;
+	fn http_request(&mut self,_:&AMX,url:String,response:&mut Cell,size:usize) -> AmxResult<Cell>;
 }
 
 impl Natives for super::PawnScraper{
@@ -28,6 +29,7 @@ impl Natives for super::PawnScraper{
 			}
 		}
 	}
+
 	fn get_nth_element_text(&mut self,_:&AMX,docid:usize, selectorid:usize,idx:usize,string:&mut Cell,size:usize) -> AmxResult<Cell>{
 		if docid >= self.html_instance.len() || selectorid >= self.selectors.len(){
 			log!("Invalid html instances passed docid {:?},selectorid {:?}",docid,selectorid);
@@ -52,6 +54,7 @@ impl Natives for super::PawnScraper{
 			}
 		}
 	}
+
 	fn get_nth_element_name(&mut self,_:&AMX,docid:usize, selectorid:usize,idx:usize,string:&mut Cell,size:usize) -> AmxResult<Cell>{
 		if docid >= self.html_instance.len() || selectorid >= self.selectors.len(){
 			log!("Invalid html instances passed docid {:?},selectorid {:?}",docid,selectorid);
@@ -70,6 +73,31 @@ impl Natives for super::PawnScraper{
 				let name_encoded = samp_sdk::cp1251::encode(element_name).unwrap();
 				set_string!(name_encoded,string,size);
 				Ok(1)
+			}
+		}
+	}
+
+	fn http_request(&mut self,_:&AMX,url:String,response:&mut Cell,size:usize) -> AmxResult<Cell>{
+		match reqwest::get(&url){
+			Ok(res) => {
+				let mut binded_res = res;
+				match binded_res.text(){
+					Ok(body) =>{
+					//	log!("fdssdfsfd");
+					//	log!("Body is {:?}",body);
+						let encoded_body = samp_sdk::cp1251::encode(&body).unwrap();
+						set_string!(encoded_body,response,size);
+						Ok(1)
+					}
+					Err(err) =>{
+						log!("Text fetching failed {:?}",err);
+						Ok(-1)	
+					}
+				}
+			}
+			Err(err) =>{
+				log!("Http error {:?}",err);
+				Ok(-1)
 			}
 		}
 	}

@@ -4,11 +4,11 @@ use samp_sdk::amx::AMX;
 use scraper::{Html,Selector};
 use natives::Natives;
 
-
 define_native!(parse_document,document:String);
 define_native!(parse_selector,string:String);
 define_native!(get_nth_element_name,docid:usize,selectorid:usize,idx:usize,string:ref Cell,size:usize);
 define_native!(get_nth_element_text,docid:usize,selectorid:usize,idx:usize,string:ref Cell,size:usize);
+define_native!(http_request,url:String,response:ref Cell,size:usize);
 
 pub struct PawnScraper{
 	pub html_instance: Vec<Html>,
@@ -30,7 +30,8 @@ impl PawnScraper{
 			"ParseHtmlDocument" => parse_document,
 			"ParseSelector" => parse_selector,
 			"GetNthElementName" => get_nth_element_name,
-			"GetNthElementText" => get_nth_element_text
+			"GetNthElementText" => get_nth_element_text,
+			"HttpGet" => http_request
 		};
 
 		match amx.register(&natives) {
