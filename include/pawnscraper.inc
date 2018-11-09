@@ -14,4 +14,6 @@ native Html:ParseHtmlDocument(document[]);
 native Selector:ParseSelector(string[]);
 native GetNthElementName(Html:docid,Selector:selectorid,idx,string[],size = sizeof(string));
 native GetNthElementText(Html:docid,Selector:selectorid,idx,string[],size = sizeof(string));
-native HttpGet(url[],response[],size=sizeof(response));
+native Response:HttpGet(url[]);
+native DeleteResponse(Response:id);
+native Html:ResponseParseHtml(Response:id);

@@ -7,7 +7,10 @@ pub trait Natives {
 	fn parse_selector(&mut self,_:&AMX,string:String) -> AmxResult<Cell>;
 	fn get_nth_element_name(&mut self,_:&AMX,docid:usize, selectorid:usize,idx:usize,string:&mut Cell,size:usize) -> AmxResult<Cell>;
 	fn get_nth_element_text(&mut self,_:&AMX,docid:usize, selectorid:usize,idx:usize,string:&mut Cell,size:usize) -> AmxResult<Cell>;
-	fn http_request(&mut self,_:&AMX,url:String,response:&mut Cell,size:usize) -> AmxResult<Cell>;
+	fn http_request(&mut self,_:&AMX,url:String) -> AmxResult<Cell>;
+	fn delete_response_cache(&mut self,_:&AMX,id:usize) -> AmxResult<Cell>;
+	fn parse_document_by_response(&mut self,_:&AMX,id:usize) -> AmxResult<Cell>;
+
 }
 
 impl Natives for super::PawnScraper{
@@ -77,7 +80,7 @@ impl Natives for super::PawnScraper{
 		}
 	}
 
-	fn http_request(&mut self,_:&AMX,url:String,response:&mut Cell,size:usize) -> AmxResult<Cell>{
+	fn http_request(&mut self,_:&AMX,url:String) -> AmxResult<Cell>{
 		match reqwest::get(&url){
 			Ok(res) => {
 				let mut binded_res = res;
@@ -85,9 +88,9 @@ impl Natives for super::PawnScraper{
 					Ok(body) =>{
 					//	log!("fdssdfsfd");
 					//	log!("Body is {:?}",body);
-						let encoded_body = samp_sdk::cp1251::encode(&body).unwrap();
-						set_string!(encoded_body,response,size);
-						Ok(1)
+						self.response_cache.insert(self.response_context_id,body);
+						self.response_context_id += 1;
+						Ok(self.response_context_id as Cell -1)
 					}
 					Err(err) =>{
 						log!("Text fetching failed {:?}",err);
@@ -98,6 +101,29 @@ impl Natives for super::PawnScraper{
 			Err(err) =>{
 				log!("Http error {:?}",err);
 				Ok(-1)
+			}
+		}
+	}
+
+	fn delete_response_cache(&mut self,_:&AMX,id:usize) -> AmxResult<Cell>{
+		if self.response_cache.remove(&id) == None{
+			Ok(0)
+		}else{
+			Ok(1)
+		}
+	}
+
+	fn parse_document_by_response(&mut self,_:&AMX,id:usize) -> AmxResult<Cell>{
+		if id > self.response_context_id {
+			Ok(-1)
+		}else{
+			let response_data = self.response_cache.get(&id);
+			if response_data == None{
+				Ok(-1)
+			}else{
+				let parsed_data = Html::parse_document(&response_data.unwrap());
+				self.html_instance.push(parsed_data);
+				Ok(self.html_instance.len()  as Cell -1)
 			}
 		}
 	}

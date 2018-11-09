@@ -5,14 +5,18 @@ use scraper::{Html,Selector};
 use natives::Natives;
 
 define_native!(parse_document,document:String);
+define_native!(parse_document_by_response,id:usize);
 define_native!(parse_selector,string:String);
 define_native!(get_nth_element_name,docid:usize,selectorid:usize,idx:usize,string:ref Cell,size:usize);
 define_native!(get_nth_element_text,docid:usize,selectorid:usize,idx:usize,string:ref Cell,size:usize);
-define_native!(http_request,url:String,response:ref Cell,size:usize);
+define_native!(http_request,url:String);
+define_native!(delete_response_cache,id:usize);
 
 pub struct PawnScraper{
 	pub html_instance: Vec<Html>,
 	pub selectors: Vec<Selector>,
+	pub response_cache: std::collections::HashMap<usize,String>,
+	pub response_context_id: usize,
 }
 
 impl PawnScraper{
@@ -31,7 +35,9 @@ impl PawnScraper{
 			"ParseSelector" => parse_selector,
 			"GetNthElementName" => get_nth_element_name,
 			"GetNthElementText" => get_nth_element_text,
-			"HttpGet" => http_request
+			"HttpGet" => http_request,
+			"DeleteResponse" => delete_response_cache,
+			"ResponseParseHtml" => parse_document_by_response
 		};
 
 		match amx.register(&natives) {
@@ -53,6 +59,8 @@ impl Default for PawnScraper{
 		PawnScraper {
 			html_instance: Vec::new(),
 			selectors: Vec::new(),
+			response_cache: std::collections::HashMap::new(),
+			response_context_id: 0,
 		}
 	}
 }
