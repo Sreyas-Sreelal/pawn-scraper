@@ -9,3 +9,5 @@
 
 native Html:ParseHtmlDocument(document[]);
 native Selector:ParseSelector(string[]);
+native Element:SelectElementValueById(Html:docid,Selector:selectorid,idx);
+native GetElementName(Element:elementid,string[],size = sizeof(string));

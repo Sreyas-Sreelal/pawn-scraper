@@ -4,13 +4,16 @@ use samp_sdk::amx::AMX;
 use scraper::{Html,Selector};
 use natives::Natives;
 
+
 define_native!(parse_document,document:String);
 define_native!(parse_selector,string:String);
-
+define_native!(select_elements_value,docid:usize,selectorid:usize,idx:usize);
+define_native!(get_element_name,elementid:usize,string:ref Cell,size:usize);
 
 pub struct PawnScraper{
 	pub html_instance: Vec<Html>,
-	pub selectors: Vec<Selector>
+	pub selectors: Vec<Selector>,
+	pub elements: Vec<scraper::node::Element>,
 }
 
 impl PawnScraper{
@@ -26,7 +29,9 @@ impl PawnScraper{
 	pub fn amx_load(&mut self, amx: &mut AMX) -> Cell {
 		let natives = natives!{
 			"ParseHtmlDocument" => parse_document,
-			"ParseSelector" => parse_selector
+			"ParseSelector" => parse_selector,
+			"SelectElementValueById" => select_elements_value,
+			"GetElementName" => get_element_name
 		};
 
 		match amx.register(&natives) {
@@ -48,6 +53,7 @@ impl Default for PawnScraper{
 		PawnScraper {
 			html_instance: Vec::new(),
 			selectors: Vec::new(),
+			elements: Vec::new(),
 		}
 	}
 }
