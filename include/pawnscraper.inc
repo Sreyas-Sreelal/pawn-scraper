@@ -7,7 +7,10 @@
 #endif
 #define _pawnscraper_included
 
+#define END_OF_ELEMENTS (0)
+#define PS_ERROR (-1)
+
 native Html:ParseHtmlDocument(document[]);
 native Selector:ParseSelector(string[]);
-native Element:SelectElementValueById(Html:docid,Selector:selectorid,idx);
-native GetElementName(Element:elementid,string[],size = sizeof(string));
+native GetNthElementName(Html:docid,Selector:selectorid,idx,string[],size = sizeof(string));
+native GetNthElementText(Html:docid,Selector:selectorid,idx,string[],size = sizeof(string));
