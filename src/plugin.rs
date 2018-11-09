@@ -7,13 +7,13 @@ use natives::Natives;
 define_native!(parse_document,document:String);
 define_native!(parse_selector,string:String);
 
-pub struct PawnScraper<'a,'b>{
+
+pub struct PawnScraper{
 	pub html_instance: Vec<Html>,
-	pub selectors: Vec<Selector>,
-	pub element_iterators: Vec<scraper::html::Select<'a,'b>>,
+	pub selectors: Vec<Selector>
 }
 
-impl<'a,'b> PawnScraper <'a,'b>{
+impl PawnScraper{
 	pub fn load(&self) -> bool {
 		log!("Plugin Loaded!");
 		return true;
@@ -43,13 +43,11 @@ impl<'a,'b> PawnScraper <'a,'b>{
 
 }
 
-impl<'a,'b> Default for PawnScraper<'a,'b> {
+impl Default for PawnScraper{
 	fn default() -> Self {
 		PawnScraper {
 			html_instance: Vec::new(),
 			selectors: Vec::new(),
-			element_iterators: Vec::new(),
-			
 		}
 	}
 }
