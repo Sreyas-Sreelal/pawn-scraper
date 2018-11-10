@@ -10,6 +10,7 @@ pub trait Natives {
 	fn http_request(&mut self,_:&AMX,url:String) -> AmxResult<Cell>;
 	fn delete_response_cache(&mut self,_:&AMX,id:usize) -> AmxResult<Cell>;
 	fn parse_document_by_response(&mut self,_:&AMX,id:usize) -> AmxResult<Cell>;
+	fn get_nth_element_attr_value(&mut self,_:&AMX,docid:usize, selectorid:usize,idx:usize,attr:String,string:&mut Cell,size:usize) -> AmxResult<Cell>;
 
 }
 
@@ -79,6 +80,33 @@ impl Natives for super::PawnScraper{
 			}
 		}
 	}
+	
+	fn get_nth_element_attr_value(&mut self,_:&AMX,docid:usize, selectorid:usize,idx:usize,attr:String,string:&mut Cell,size:usize) -> AmxResult<Cell>{
+		if docid >= self.html_instance.len() || selectorid >= self.selectors.len(){
+			log!("Invalid html instances passed docid {:?},selectorid {:?}",docid,selectorid);
+			Ok(-1)
+		}else{
+			let html = &self.html_instance[docid];
+			let selector = &self.selectors[selectorid];
+			let nth_element = html.select(selector).nth(idx);
+			if nth_element == None{
+				log!("Error on fetching element {:?} idx {:?} docid {:?} selectorid {:?}",self.html_instance[docid].select(&self.selectors[selectorid]).nth(idx),idx,docid,selectorid);
+				Ok(0)
+			}else{
+				let attr_value = nth_element.unwrap().value().attr(&attr);
+				if attr_value == None{
+					Ok(-2)
+				}else{
+					log!("Testing element_name {:?}",attr_value);
+					let attr_encoded = samp_sdk::cp1251::encode(attr_value.unwrap()).unwrap();
+					set_string!(attr_encoded,string,size);
+					Ok(1)
+				}
+			}
+		}
+	}
+
+
 
 	fn http_request(&mut self,_:&AMX,url:String) -> AmxResult<Cell>{
 		match reqwest::get(&url){

@@ -11,6 +11,7 @@ define_native!(get_nth_element_name,docid:usize,selectorid:usize,idx:usize,strin
 define_native!(get_nth_element_text,docid:usize,selectorid:usize,idx:usize,string:ref Cell,size:usize);
 define_native!(http_request,url:String);
 define_native!(delete_response_cache,id:usize);
+define_native!(get_nth_element_attr_value,docid:usize, selectorid:usize,idx:usize,attr:String,string:ref Cell,size:usize);
 
 pub struct PawnScraper{
 	pub html_instance: Vec<Html>,
@@ -37,7 +38,8 @@ impl PawnScraper{
 			"GetNthElementText" => get_nth_element_text,
 			"HttpGet" => http_request,
 			"DeleteResponse" => delete_response_cache,
-			"ResponseParseHtml" => parse_document_by_response
+			"ResponseParseHtml" => parse_document_by_response,
+			"GetNthElementAttrVal" => get_nth_element_attr_value
 		};
 
 		match amx.register(&natives) {
