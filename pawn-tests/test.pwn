@@ -21,13 +21,3 @@ Test:ParseSelector() {
 	ASSERT(selector >= Selector:0);
 }
 
-/*
-Test:SelectElementValueByIdTest() {
-	new Selector:selector = ParseSelector("\
-		<!DOCTYPE html>\
-		<meta charset=\"utf-8\">\
-		<title>Hello, world!</title>\
-		<h1 class=\"foo\">Hello, <i>world!</i></h1>\
-	");
-	ASSERT(selector >= Selector:0);
-}*/
