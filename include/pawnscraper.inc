@@ -18,3 +18,5 @@ native Response:HttpGet(url[]);
 native DeleteResponse(Response:id);
 native Html:ResponseParseHtml(Response:id);
 native GetNthElementAttrVal(Html:docid,Selector:selectorid,idx,attribute[],string[],size = sizeof(string));
+
+

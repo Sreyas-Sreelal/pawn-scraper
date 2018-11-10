@@ -11,7 +11,6 @@ pub trait Natives {
 	fn delete_response_cache(&mut self,_:&AMX,id:usize) -> AmxResult<Cell>;
 	fn parse_document_by_response(&mut self,_:&AMX,id:usize) -> AmxResult<Cell>;
 	fn get_nth_element_attr_value(&mut self,_:&AMX,docid:usize, selectorid:usize,idx:usize,attr:String,string:&mut Cell,size:usize) -> AmxResult<Cell>;
-
 }
 
 impl Natives for super::PawnScraper{
@@ -106,16 +105,12 @@ impl Natives for super::PawnScraper{
 		}
 	}
 
-
-
 	fn http_request(&mut self,_:&AMX,url:String) -> AmxResult<Cell>{
 		match reqwest::get(&url){
 			Ok(res) => {
 				let mut binded_res = res;
 				match binded_res.text(){
 					Ok(body) =>{
-					//	log!("fdssdfsfd");
-					//	log!("Body is {:?}",body);
 						self.response_cache.insert(self.response_context_id,body);
 						self.response_context_id += 1;
 						Ok(self.response_context_id as Cell -1)
@@ -151,7 +146,7 @@ impl Natives for super::PawnScraper{
 			}else{
 				let parsed_data = Html::parse_document(&response_data.unwrap());
 				self.html_instance.push(parsed_data);
-				Ok(self.html_instance.len()  as Cell -1)
+				Ok(self.html_instance.len() as Cell -1)
 			}
 		}
 	}
