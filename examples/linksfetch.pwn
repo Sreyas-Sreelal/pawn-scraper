@@ -2,21 +2,32 @@
 #include<pawnscraper>
 
 main(){
-	new Selector:selector = ParseSelector("a");
-	if(selector == Selector:-1){
-		printf("Error on creating selector");
+	
+	new Response:response = HttpGet("https://wiki.sa-mp.com");
+	if(response == SCRAPER_HTTP_ERROR){
+		printf("HTTP ERROR");
 		return;
 	}
-	new Response:response = HttpGet("https://wiki.sa-mp.com");
 
 	new Html:html = ResponseParseHtml(response);
 	if(html==Html:-1){
 		printf("Error on creating html instance");
 		return;
 	}
-	new str[500];
-	for(new i;GetNthElementAttrVal(html,selector,i,"href",str)!=0;++i){
-		printf("%s",str);
+
+	new Selector:selector = ParseSelector("a");
+	if(selector == INVALID_SELECTOR){
+		printf("Error on creating selector");
+		return;
 	}
-	DeleteResponse(response);
+
+	new str[500],i;
+	while(GetNthElementAttrVal(html,selector,i,"href",str)){
+		printf("%s",str);
+		++i;
+	}
+
+	if(!DeleteResponse(response)){
+		print("[WARNING] Response cache couldn't removed");
+	}
 }

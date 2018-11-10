@@ -8,7 +8,11 @@
 #define _pawnscraper_included
 
 #define END_OF_ELEMENTS (0)
-#define PS_ERROR (-1)
+#define INVALID_HTML_DOC (Html:-1)
+#define INVALID_SELECTOR (Selector:-1)
+#define INVALID_ATTRIBUTE (-2)
+#define SCRAPER_ERROR (-1)
+#define SCRAPER_HTTP_ERROR (Response:-1)
 
 native Html:ParseHtmlDocument(document[]);
 native Selector:ParseSelector(string[]);
