@@ -10,7 +10,7 @@ main(){
 	}
 
 	new Html:html = ResponseParseHtml(response);
-	if(html==Html:-1){
+	if(html == INVALID_HTML_DOC){
 		printf("Error on creating html instance");
 		return;
 	}
