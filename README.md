@@ -1,7 +1,22 @@
 # pawn-scraper
-A powerful plugin to that helps to do web scraping in pawn.
+A powerful scraper plugin that provides interface for utlising html_parsers and css selectors in pawn.
 
-## Example
+## Building
+* Clone the repo
+
+`git clone https://github.com/Sreyas-Sreelal/pawn-scraper.git`
+* Compile the plugin using nightly compiler
+ 
+  * **Windows**
+	
+	`cargo +nightly-i686-pc-windows-msvc build --release`
+  * **Linux**
+	
+	`cargo +nightly-i686-unknown-linux-gnu build --release`
+
+* Add [pawnscraper.inc](includes/pawnscraper.inc) in includes folder
+
+## Example Usage
 A small example to fetch all links in wiki.sa-mp.com 
 ```Pawn
 new Response:response = HttpGet("https://wiki.sa-mp.com");
