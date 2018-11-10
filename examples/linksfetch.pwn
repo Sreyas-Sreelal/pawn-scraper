@@ -1,6 +1,4 @@
 #include<a_samp>
-#include<a_http>
-
 #include<pawnscraper>
 
 main(){
