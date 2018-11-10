@@ -20,6 +20,21 @@ impl Natives for super::PawnScraper{
 		Ok(self.html_instance.len()  as Cell -1)
 	}
 
+	fn parse_document_by_response(&mut self,_:&AMX,id:usize) -> AmxResult<Cell>{
+		if id > self.response_context_id {
+			Ok(-1)
+		}else{
+			let response_data = self.response_cache.get(&id);
+			if response_data == None{
+				Ok(-1)
+			}else{
+				let parsed_data = Html::parse_document(&response_data.unwrap());
+				self.html_instance.push(parsed_data);
+				Ok(self.html_instance.len() as Cell -1)
+			}
+		}
+	}
+
 	fn parse_selector(&mut self,_:&AMX,string:String) -> AmxResult<Cell> {
 		match Selector::parse(&string){
 			Ok(selector) => {
@@ -42,7 +57,6 @@ impl Natives for super::PawnScraper{
 			let selector = &self.selectors[selectorid];
 			let nth_element = html.select(selector).nth(idx);
 			if nth_element == None{
-				log!("Error on fetching element {:?} idx {:?} docid {:?} selectorid {:?}",nth_element,idx,docid,selectorid);
 				Ok(0)
 			}else{
 				let element_text_iter = nth_element.unwrap().text();
@@ -50,7 +64,6 @@ impl Natives for super::PawnScraper{
 				for i in element_text_iter{
 					full_text += i;
 				}
-				log!("Testing element_text {:?}",full_text);
 				let text_encoded = samp_sdk::cp1251::encode(&full_text).unwrap();
 				set_string!(text_encoded,string,size);
 				Ok(1)
@@ -68,11 +81,9 @@ impl Natives for super::PawnScraper{
 			let nth_element = html.select(selector).nth(idx);
 			
 			if nth_element == None{
-				log!("Error on fetching element {:?} idx {:?} docid {:?} selectorid {:?}",self.html_instance[docid].select(&self.selectors[selectorid]).nth(idx),idx,docid,selectorid);
 				Ok(0)
 			}else{
 				let element_name = nth_element.unwrap().value().name();
-				log!("Testing element_name {:?}",element_name);
 				let name_encoded = samp_sdk::cp1251::encode(element_name).unwrap();
 				set_string!(name_encoded,string,size);
 				Ok(1)
@@ -89,14 +100,12 @@ impl Natives for super::PawnScraper{
 			let selector = &self.selectors[selectorid];
 			let nth_element = html.select(selector).nth(idx);
 			if nth_element == None{
-				log!("Error on fetching element {:?} idx {:?} docid {:?} selectorid {:?}",self.html_instance[docid].select(&self.selectors[selectorid]).nth(idx),idx,docid,selectorid);
 				Ok(0)
 			}else{
 				let attr_value = nth_element.unwrap().value().attr(&attr);
 				if attr_value == None{
 					Ok(-2)
 				}else{
-					log!("Testing element_name {:?}",attr_value);
 					let attr_encoded = samp_sdk::cp1251::encode(attr_value.unwrap()).unwrap();
 					set_string!(attr_encoded,string,size);
 					Ok(1)
@@ -133,21 +142,6 @@ impl Natives for super::PawnScraper{
 			Ok(0)
 		}else{
 			Ok(1)
-		}
-	}
-
-	fn parse_document_by_response(&mut self,_:&AMX,id:usize) -> AmxResult<Cell>{
-		if id > self.response_context_id {
-			Ok(-1)
-		}else{
-			let response_data = self.response_cache.get(&id);
-			if response_data == None{
-				Ok(-1)
-			}else{
-				let parsed_data = Html::parse_document(&response_data.unwrap());
-				self.html_instance.push(parsed_data);
-				Ok(self.html_instance.len() as Cell -1)
-			}
 		}
 	}
 }
