@@ -1,0 +1,31 @@
+{
+	"user": "Sreyas-Sreelal",
+	"repo": "pawn-scraper",
+	"entry": "test/test.pwn",
+	"output": "test/test.amx",
+	"dependencies": ["sampctl/pawn-stdlib"],
+	"include_path": "include",
+	"builds": [
+		{
+			"name": "test",
+			"includes": ["./include"]
+		}
+	],
+	"runtime": {
+		"plugins": ["Sreyas-Sreelal/pawn-scraper"]
+	},
+	"resources": [
+		{
+			"name": "pawn-scraper-linux-x86.zip",
+			"platform": "linux",
+			"archive": true,
+			"plugins": ["plugins/PawnScraper.so"]
+		},
+		{
+			"name": "pawn-scraper-windows-x86.zip",
+			"platform": "windows",
+			"archive": true,
+			"plugins": ["plugins/PawnScraper.dll"]
+		}
+	]
+}

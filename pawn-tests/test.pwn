@@ -3,7 +3,7 @@
 #define RUN_TESTS
 #include <YSI\y_testing>
 
-#include<pawnscraper>
+#include "../include/pawnscraper"
 
 Test:TestParseHtmlDocument(){
 	new Html:doc = ParseHtmlDocument("\
