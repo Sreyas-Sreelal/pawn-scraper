@@ -12,14 +12,12 @@ main(){
 	new Html:html = ResponseParseHtml(response);
 	if(html == INVALID_HTML_DOC){
 		printf("Error on creating html instance");
-		DeleteResponse(response);
 		return;
 	}
 
 	new Selector:selector = ParseSelector("a");
 	if(selector == INVALID_SELECTOR){
 		printf("Error on creating selector");
-		DeleteResponse(response);
 		return;
 	}
 
@@ -29,7 +27,4 @@ main(){
 		++i;
 	}
 
-	if(!DeleteResponse(response)){
-		print("[WARNING] Response cache couldn't removed");
-	}
 }

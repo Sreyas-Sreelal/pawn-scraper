@@ -4,7 +4,6 @@
 
 main(){
 	
-	
 }
 
 CMD:yt2mp3(playerid,params[]){
@@ -25,7 +24,6 @@ Yt2Mp3(playerid,id[]){
 	new Html:html = ResponseParseHtml(response);
 	if(html==Html:-1){
 		printf("Error on creating html instance");
-		DeleteResponse(response);
 		return;
 	}
 
@@ -35,7 +33,6 @@ Yt2Mp3(playerid,id[]){
 
 	if(link_selector == INVALID_SELECTOR || name_selector == INVALID_SELECTOR){
 		printf("Error on creating selector");
-		DeleteResponse(response);
 		return;
 	}
 
@@ -49,6 +46,7 @@ Yt2Mp3(playerid,id[]){
 			break;
 		++i;
 	}
+
 	if(!check){
 		SendClientMessage(playerid,-1,"Can't play song right now ");
 	}else{
@@ -58,7 +56,5 @@ Yt2Mp3(playerid,id[]){
 
 		PlayAudioStreamForPlayer(playerid,str);
 	}
-	if(!DeleteResponse(response)){
-		print("[WARNING] Response cache couldn't removed");
-	}
+	
 }
