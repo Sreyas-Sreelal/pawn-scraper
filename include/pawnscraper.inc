@@ -15,12 +15,27 @@
 #define SCRAPER_HTTP_ERROR (Response:-1)
 
 native Html:ParseHtmlDocument(document[]);
+native Html:ResponseParseHtml(Response:id);
+native Response:HttpGet(url[]);
 native Selector:ParseSelector(string[]);
 native GetNthElementName(Html:docid,Selector:selectorid,idx,string[],size = sizeof(string));
 native GetNthElementText(Html:docid,Selector:selectorid,idx,string[],size = sizeof(string));
-native Response:HttpGet(url[]);
-native DeleteResponse(Response:id);
-native Html:ResponseParseHtml(Response:id);
 native GetNthElementAttrVal(Html:docid,Selector:selectorid,idx,attribute[],string[],size = sizeof(string));
+native DeleteHtml(Html:id);
+native DeleteSelector(Selector:id);
+native DeleteResponse(Response:id);
 
+stock operator~(Html:html[], size) {
+	#pragma unused size
+	DeleteHtml(html[0]);
+}
 
+stock operator~(Selector:selector[], size) {
+	#pragma unused size
+	DeleteSelector(selector[0]);
+}
+
+stock operator~(Response:response[], size) {
+	#pragma unused size
+	DeleteResponse(response[0]);
+}
