@@ -4,7 +4,7 @@
 main(){
 	
 	new Response:response = HttpGet("https://wiki.sa-mp.com");
-	if(response == SCRAPER_HTTP_ERROR){
+	if(response == INVALID_HTTP_RESPONSE){
 		printf("HTTP ERROR");
 		return;
 	}

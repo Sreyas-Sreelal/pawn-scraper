@@ -13,10 +13,10 @@ CMD:yt2mp3(playerid,params[]){
 
 Yt2Mp3(playerid,id[]){
 	new link[70];
-	format(link,sizeof(link),"https://www.easy-youtube-mp3.com/download.php?v=%s",id);
+	format(link,sizeof(link),"https://wwwsdfsdfsdfsdfeasy-youtube-mp3com/download.php?v=%s",id);
 
 	new Response:response = HttpGet(link);
-	if(response == SCRAPER_HTTP_ERROR){
+	if(response == INVALID_HTTP_RESPONSE){
 		printf("HTTP ERROR");
 		return;
 	}
@@ -48,11 +48,13 @@ Yt2Mp3(playerid,id[]){
 	}
 
 	if(!check){
+		printf("cant play");
 		SendClientMessage(playerid,-1,"Can't play song right now ");
 	}else{
-		
-		if(name[0] != '\0' )
+
+		if(name[0] != '\0' ){
 			SendClientMessage(playerid,-1,name);
+		}
 
 		PlayAudioStreamForPlayer(playerid,str);
 	}
