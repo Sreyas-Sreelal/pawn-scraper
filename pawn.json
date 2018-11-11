@@ -1,8 +1,8 @@
 {
 	"user": "Sreyas-Sreelal",
 	"repo": "pawn-scraper",
-	"entry": "test/test.pwn",
-	"output": "test/test.amx",
+	"entry": "pawn-tests/test.pwn",
+	"output": "pawn-tests/test.amx",
 	"dependencies": ["sampctl/pawn-stdlib"],
 	"include_path": "include",
 	"builds": [
