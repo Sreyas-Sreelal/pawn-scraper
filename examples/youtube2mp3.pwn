@@ -13,7 +13,7 @@ CMD:yt2mp3(playerid,params[]){
 
 Yt2Mp3(playerid,id[]){
 	new link[70];
-	format(link,sizeof(link),"https://www.easy-youtube-mp3com/download.php?v=%s",id);
+	format(link,sizeof(link),"https://www.easy-youtube-mp3.com/download.php?v=%s",id);
 
 	new Response:response = HttpGet(link);
 	if(response == INVALID_HTTP_RESPONSE){
