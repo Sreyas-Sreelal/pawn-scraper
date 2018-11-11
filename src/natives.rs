@@ -4,20 +4,23 @@ use scraper::{Html,Selector};
 
 pub trait Natives {
 	fn parse_document(&mut self,_:&AMX,document:String) -> AmxResult<Cell>;
+	fn parse_document_by_response(&mut self,_:&AMX,id:usize) -> AmxResult<Cell>;
 	fn parse_selector(&mut self,_:&AMX,string:String) -> AmxResult<Cell>;
+	fn http_request(&mut self,_:&AMX,url:String) -> AmxResult<Cell>;
 	fn get_nth_element_name(&mut self,_:&AMX,docid:usize, selectorid:usize,idx:usize,string:&mut Cell,size:usize) -> AmxResult<Cell>;
 	fn get_nth_element_text(&mut self,_:&AMX,docid:usize, selectorid:usize,idx:usize,string:&mut Cell,size:usize) -> AmxResult<Cell>;
-	fn http_request(&mut self,_:&AMX,url:String) -> AmxResult<Cell>;
-	fn delete_response_cache(&mut self,_:&AMX,id:usize) -> AmxResult<Cell>;
-	fn parse_document_by_response(&mut self,_:&AMX,id:usize) -> AmxResult<Cell>;
 	fn get_nth_element_attr_value(&mut self,_:&AMX,docid:usize, selectorid:usize,idx:usize,attr:String,string:&mut Cell,size:usize) -> AmxResult<Cell>;
+	fn delete_html_instance(&mut self,_:&AMX,id:usize) -> AmxResult<Cell>;
+	fn delete_selector_instance(&mut self,_:&AMX,id:usize) -> AmxResult<Cell>;
+	fn delete_response_cache(&mut self,_:&AMX,id:usize) -> AmxResult<Cell>;	
 }
 
 impl Natives for super::PawnScraper{
 	fn parse_document(&mut self,_:&AMX,document:String) -> AmxResult<Cell> {
 		let parsed_data = Html::parse_document(&document);
-		self.html_instance.push(parsed_data);
-		Ok(self.html_instance.len()  as Cell -1)
+		self.html_instance.insert(self.html_context_id,parsed_data);
+		self.html_context_id += 1;
+		Ok(self.html_context_id  as Cell -1)
 	}
 
 	fn parse_document_by_response(&mut self,_:&AMX,id:usize) -> AmxResult<Cell>{
@@ -29,8 +32,9 @@ impl Natives for super::PawnScraper{
 				Ok(-1)
 			}else{
 				let parsed_data = Html::parse_document(&response_data.unwrap());
-				self.html_instance.push(parsed_data);
-				Ok(self.html_instance.len() as Cell -1)
+				self.html_instance.insert(self.html_context_id,parsed_data);
+				self.html_context_id += 1;
+				Ok(self.html_context_id  as Cell -1)
 			}
 		}
 	}
@@ -38,8 +42,9 @@ impl Natives for super::PawnScraper{
 	fn parse_selector(&mut self,_:&AMX,string:String) -> AmxResult<Cell> {
 		match Selector::parse(&string){
 			Ok(selector) => {
-				self.selectors.push(selector);
-				Ok(self.selectors.len() as Cell -1)
+				self.selectors.insert(self.selector_context_id,selector);
+				self.selector_context_id += 1;
+				Ok(self.selector_context_id as Cell -1)
 			}
 			Err(err) =>{
 				log!("Failed parsing selector {:?}",err);
@@ -49,12 +54,12 @@ impl Natives for super::PawnScraper{
 	}
 
 	fn get_nth_element_text(&mut self,_:&AMX,docid:usize, selectorid:usize,idx:usize,string:&mut Cell,size:usize) -> AmxResult<Cell>{
-		if docid >= self.html_instance.len() || selectorid >= self.selectors.len(){
+		if !self.html_instance.contains_key(&docid) || !self.selectors.contains_key(&selectorid){
 			log!("Invalid html instances passed docid {:?},selectorid {:?}",docid,selectorid);
 			Ok(-1)
 		}else{
-			let html = &self.html_instance[docid];
-			let selector = &self.selectors[selectorid];
+			let html = &self.html_instance.get(&docid).unwrap();
+			let selector = &self.selectors.get(&selectorid).unwrap();
 			let nth_element = html.select(selector).nth(idx);
 			if nth_element == None{
 				Ok(0)
@@ -72,12 +77,12 @@ impl Natives for super::PawnScraper{
 	}
 
 	fn get_nth_element_name(&mut self,_:&AMX,docid:usize, selectorid:usize,idx:usize,string:&mut Cell,size:usize) -> AmxResult<Cell>{
-		if docid >= self.html_instance.len() || selectorid >= self.selectors.len(){
+		if !self.html_instance.contains_key(&docid) || !self.selectors.contains_key(&selectorid){
 			log!("Invalid html instances passed docid {:?},selectorid {:?}",docid,selectorid);
 			Ok(-1)
 		}else{
-			let html = &self.html_instance[docid];
-			let selector = &self.selectors[selectorid];
+			let html = &self.html_instance.get(&docid).unwrap();
+			let selector = &self.selectors.get(&selectorid).unwrap();
 			let nth_element = html.select(selector).nth(idx);
 			
 			if nth_element == None{
@@ -92,12 +97,12 @@ impl Natives for super::PawnScraper{
 	}
 	
 	fn get_nth_element_attr_value(&mut self,_:&AMX,docid:usize, selectorid:usize,idx:usize,attr:String,string:&mut Cell,size:usize) -> AmxResult<Cell>{
-		if docid >= self.html_instance.len() || selectorid >= self.selectors.len(){
+		if !self.html_instance.contains_key(&docid) || !self.selectors.contains_key(&selectorid){
 			log!("Invalid html instances passed docid {:?},selectorid {:?}",docid,selectorid);
 			Ok(-1)
 		}else{
-			let html = &self.html_instance[docid];
-			let selector = &self.selectors[selectorid];
+			let html = &self.html_instance.get(&docid).unwrap();
+			let selector = &self.selectors.get(&selectorid).unwrap();
 			let nth_element = html.select(selector).nth(idx);
 			if nth_element == None{
 				Ok(0)
@@ -139,11 +144,33 @@ impl Natives for super::PawnScraper{
 
 	fn delete_response_cache(&mut self,_:&AMX,id:usize) -> AmxResult<Cell>{
 		if self.response_cache.remove(&id) == None{
+			log!("Error trying to remove invalid response id {:?}",id);
 			Ok(0)
 		}else{
+			log!("[DEBUG] Removed response_data {:?}",id);
 			Ok(1)
 		}
 	}
+
+	fn delete_html_instance(&mut self,_:&AMX,id:usize) -> AmxResult<Cell>{
+		if self.html_instance.remove(&id) == None{
+			log!("Error trying to remove invalid html id {:?}",id);
+			Ok(0)
+		}else{
+			log!("[DEBUG] Removed html_instance {:?}",id);
+			Ok(1)
+		}
+	}
+
+	fn delete_selector_instance(&mut self,_:&AMX,id:usize) -> AmxResult<Cell>{
+		if self.selectors.remove(&id) == None{
+			log!("Error trying to remove invalid selector id {:?}",id);
+			Ok(0)
+		}else{
+			log!("[DEBUG] Removed selector_instance {:?}",id);
+			Ok(1)
+		}
+	}	
 }
 
 
