@@ -15,11 +15,6 @@ Test:TestParseHtmlDocument(){
 	ASSERT(doc != INVALID_HTML_DOC);
 }
 
-Test:TestParseHtmlDocumentError(){
-	new Html:doc = ParseHtmlDocument("invalid html doc here");
-	ASSERT(doc != INVALID_HTML_DOC);
-}
-
 Test:TestParseSelector(){
 	new Selector:selector = ParseSelector("h1 .foo");
 	ASSERT(selector != INVALID_SELECTOR);
