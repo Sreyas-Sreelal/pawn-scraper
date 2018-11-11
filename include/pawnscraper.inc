@@ -12,7 +12,7 @@
 #define INVALID_SELECTOR (Selector:-1)
 #define INVALID_ATTRIBUTE (-2)
 #define SCRAPER_ERROR (-1)
-#define SCRAPER_HTTP_ERROR (Response:-1)
+#define INVALID_HTTP_RESPONSE (Response:-1)
 
 native Html:ParseHtmlDocument(document[]);
 native Html:ResponseParseHtml(Response:id);
@@ -27,15 +27,21 @@ native DeleteResponse(Response:id);
 
 stock operator~(Html:html[], size) {
 	#pragma unused size
-	DeleteHtml(html[0]);
+	if(html[0] != INVALID_HTML_DOC) {
+		DeleteHtml(html[0]);
+	}
 }
 
 stock operator~(Selector:selector[], size) {
 	#pragma unused size
-	DeleteSelector(selector[0]);
+	if(selector[0] != INVALID_SELECTOR) {
+		DeleteSelector(selector[0]);
+	}
 }
 
 stock operator~(Response:response[], size) {
 	#pragma unused size
-	DeleteResponse(response[0]);
+	if(response[0] != INVALID_HTTP_RESPONSE) {
+		DeleteResponse(response[0]);
+	}
 }
