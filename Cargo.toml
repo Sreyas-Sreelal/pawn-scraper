@@ -11,3 +11,4 @@ crate-type = ["dylib"]
 samp-sdk = "0.8.4"
 scraper  = "0.8.1"
 reqwest  = "0.9.4"
+openssl = {version = "0.10", features = ["vendored"]}
