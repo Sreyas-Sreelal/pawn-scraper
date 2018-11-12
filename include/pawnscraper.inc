@@ -81,7 +81,7 @@ GetNthElementText(Html:docid,Selector:selectorid,idx,string[],size = sizeof(stri
 native GetNthElementText(Html:docid,Selector:selectorid,idx,string[],size = sizeof(string));
 
 /*
-GetNthElementAttrVal(Html:docid,Selector:selectorid,idx,attribute[],string[],size = sizeof(string));
+GetNthElementAttrVal(Html:docid,Selector:selectorid,idx,attribute[],string[],size = sizeof(string))
 	Params
 		docid - Html instance id
 		selectorid - CSS selector instance id
