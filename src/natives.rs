@@ -1,6 +1,7 @@
 use samp_sdk::types::Cell;
 use samp_sdk::amx::{AmxResult, AMX};
 use scraper::{Html,Selector};
+use minihttp::request::Request;
 
 pub trait Natives {
 	fn parse_document(&mut self,_:&AMX,document:String) -> AmxResult<Cell>;
@@ -120,23 +121,23 @@ impl Natives for super::PawnScraper{
 	}
 
 	fn http_request(&mut self,_:&AMX,url:String) -> AmxResult<Cell>{
-		match reqwest::get(&url){
-			Ok(res) => {
-				let mut binded_res = res;
-				match binded_res.text(){
-					Ok(body) =>{
+		match Request::new(&url){
+			Ok(mut http) =>{
+				match http.get().send(){
+					Ok(res) => {
+						let body = res.text();
 						self.response_cache.insert(self.response_context_id,body);
 						self.response_context_id += 1;
 						Ok(self.response_context_id as Cell -1)
 					}
 					Err(err) =>{
-						log!("Text fetching failed {:?}",err);
-						Ok(-1)	
+						log!("Http error {:?}",err);
+						Ok(-1)
 					}
 				}
 			}
 			Err(err) =>{
-				log!("Http error {:?}",err);
+				log!("Url parse error {:?}",err);
 				Ok(-1)
 			}
 		}
