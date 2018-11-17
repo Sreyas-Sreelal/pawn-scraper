@@ -1,6 +1,6 @@
 [package]
 name = "PawnScraper"
-version = "0.1.0"
+version = "0.0.2"
 authors = ["Sreyas <sreyassreelal@gmail.com>"]
 
 [lib]
@@ -10,5 +10,4 @@ crate-type = ["dylib"]
 [dependencies]
 samp-sdk = "0.8.4"
 scraper  = "0.8.1"
-reqwest  = "0.9.4"
-minihttp = " 0.1.9"
+mio_httpc = {version = "0.6.23",features = ["rtls"]}

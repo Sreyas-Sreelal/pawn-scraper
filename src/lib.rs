@@ -1,8 +1,7 @@
 #[macro_use]
 extern crate samp_sdk;
 extern crate scraper;
-extern crate minihttp;
-
+extern crate mio_httpc;
 mod plugin;
 mod natives;
 
