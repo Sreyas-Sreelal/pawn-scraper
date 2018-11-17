@@ -1,7 +1,7 @@
 use samp_sdk::types::Cell;
 use samp_sdk::amx::{AmxResult, AMX};
 use scraper::{Html,Selector};
-use mio_httpc::CallBuilder;
+use minihttp::request::Request;
 
 pub trait Natives {
 	fn parse_document(&mut self,_:&AMX,document:String) -> AmxResult<Cell>;
@@ -121,11 +121,11 @@ impl Natives for super::PawnScraper{
 	}
 
 	fn http_request(&mut self,_:&AMX,url:String) -> AmxResult<Cell>{
-		match CallBuilder::get().timeout_ms(10000).url(&url){
-			Ok(http) =>{
-				match http.exec(){
-					Ok((_response_meta, body)) => {
-						let body = String::from_utf8(body).unwrap();
+		match Request::new(&url){
+			Ok(mut http) =>{
+				match http.get().send(){
+					Ok(res) => {
+						let body = res.text();
 						self.response_cache.insert(self.response_context_id,body);
 						self.response_context_id += 1;
 						Ok(self.response_context_id as Cell -1)
