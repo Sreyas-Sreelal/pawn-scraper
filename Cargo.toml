@@ -10,5 +10,4 @@ crate-type = ["dylib"]
 [dependencies]
 samp-sdk = "0.8.4"
 scraper  = "0.8.1"
-reqwest  = "0.9.4"
-minihttp = " 0.1.9"
+minihttp = {git = "https://github.com/Sreyas-Sreelal/minihttp"}
