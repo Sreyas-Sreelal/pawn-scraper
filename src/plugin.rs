@@ -3,13 +3,11 @@ use samp_sdk::types::Cell;
 use samp_sdk::amx::AMX;
 use scraper::{Html,Selector};
 use natives::Natives;
-use std::sync::{Arc,Mutex};
 
 define_native!(parse_document,document:String);
 define_native!(parse_document_by_response,id:usize);
 define_native!(parse_selector,string:String);
 define_native!(http_request,url:String);
-define_native!(http_request_threaded,callback:String,url:String);
 define_native!(get_nth_element_name,docid:usize,selectorid:usize,idx:usize,string:ref Cell,size:usize);
 define_native!(get_nth_element_text,docid:usize,selectorid:usize,idx:usize,string:ref Cell,size:usize);
 define_native!(get_nth_element_attr_value,docid:usize, selectorid:usize,idx:usize,attr:String,string:ref Cell,size:usize);
@@ -20,10 +18,10 @@ define_native!(delete_selector_instance,id:usize);
 pub struct PawnScraper{
 	pub html_instance: std::collections::HashMap<usize,Html>,
 	pub selectors: std::collections::HashMap<usize,Selector>,
-	pub response_cache: Arc<Mutex<std::collections::HashMap<usize,String>>>,
+	pub response_cache: std::collections::HashMap<usize,String>,
 	pub html_context_id: usize,
 	pub selector_context_id: usize,
-	pub response_context_id: Arc<Mutex<usize>>,
+	pub response_context_id: usize,
 }
 
 impl PawnScraper{
@@ -42,7 +40,6 @@ impl PawnScraper{
 			"ResponseParseHtml" => parse_document_by_response,
 			"ParseSelector" => parse_selector,
 			"HttpGet" => http_request,
-			"HttpGetThreaded" => http_request_threaded,
 			"GetNthElementName" => get_nth_element_name,
 			"GetNthElementText" => get_nth_element_text,
 			"GetNthElementAttrVal" => get_nth_element_attr_value,
@@ -70,10 +67,10 @@ impl Default for PawnScraper{
 		PawnScraper {
 			html_instance: std::collections::HashMap::new(),
 			selectors: std::collections::HashMap::new(),
-			response_cache:  Arc::new(Mutex::new(std::collections::HashMap::new())),
+			response_cache: std::collections::HashMap::new(),
 			html_context_id: 0,
 			selector_context_id: 0,
-			response_context_id: Arc::new(Mutex::new(0)),
+			response_context_id: 0,
 		}
 	}
 }
