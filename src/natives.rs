@@ -2,12 +2,16 @@ use samp_sdk::types::Cell;
 use samp_sdk::amx::{AmxResult, AMX};
 use scraper::{Html,Selector};
 use minihttp::request::Request;
+use std::thread;
+use std::sync::{Arc,Mutex};
+
 
 pub trait Natives {
 	fn parse_document(&mut self,_:&AMX,document:String) -> AmxResult<Cell>;
 	fn parse_document_by_response(&mut self,_:&AMX,id:usize) -> AmxResult<Cell>;
 	fn parse_selector(&mut self,_:&AMX,string:String) -> AmxResult<Cell>;
 	fn http_request(&mut self,_:&AMX,url:String) -> AmxResult<Cell>;
+	fn http_request_threaded(&self,amx:&AMX,callback:String,url:String) -> AmxResult<Cell>;
 	fn get_nth_element_name(&mut self,_:&AMX,docid:usize, selectorid:usize,idx:usize,string:&mut Cell,size:usize) -> AmxResult<Cell>;
 	fn get_nth_element_text(&mut self,_:&AMX,docid:usize, selectorid:usize,idx:usize,string:&mut Cell,size:usize) -> AmxResult<Cell>;
 	fn get_nth_element_attr_value(&mut self,_:&AMX,docid:usize, selectorid:usize,idx:usize,attr:String,string:&mut Cell,size:usize) -> AmxResult<Cell>;
@@ -25,10 +29,11 @@ impl Natives for super::PawnScraper{
 	}
 
 	fn parse_document_by_response(&mut self,_:&AMX,id:usize) -> AmxResult<Cell>{
-		if id > self.response_context_id {
+		if id > *self.response_context_id.lock().unwrap() {
 			Ok(-1)
 		}else{
-			let response_data = self.response_cache.get(&id);
+			let bind = self.response_cache.lock().unwrap();
+			let response_data = bind.get(&id);
 			if response_data == None{
 				Ok(-1)
 			}else{
@@ -126,9 +131,9 @@ impl Natives for super::PawnScraper{
 				match http.get().send(){
 					Ok(res) => {
 						let body = res.text();
-						self.response_cache.insert(self.response_context_id,body);
-						self.response_context_id += 1;
-						Ok(self.response_context_id as Cell -1)
+						self.response_cache.lock().unwrap().insert(*self.response_context_id.lock().unwrap(),body);
+						*self.response_context_id.lock().unwrap() += 1;
+						Ok(*self.response_context_id.lock().unwrap() as Cell -1)
 					}
 					Err(err) =>{
 						log!("Http error {:?}",err);
@@ -143,8 +148,43 @@ impl Natives for super::PawnScraper{
 		}
 	}
 
+
+	fn http_request_threaded(&self,amx:&AMX,callback:String,url:String) -> AmxResult<Cell>{
+
+		let hashmap_guard = self.response_cache.clone();
+		let response_context_guard = self.response_context_id.clone();
+		let amx_guard:Arc<Mutex<AMX>> = Arc::new(Mutex::new(AMX::from(*amx.clone())));
+		let amx_guard = amx_guard.clone();
+		thread::spawn(move || {
+			match Request::new(&url){
+				Ok(mut http) =>{
+					match http.get().send(){
+						Ok(res) => {
+							let body = res.text();
+							hashmap_guard.lock().unwrap().insert(*response_context_guard.lock().unwrap(),body);
+							*response_context_guard.lock().unwrap() += 1;
+						}
+						Err(err) =>{
+							log!("Http error {:?}",err);
+						}
+					}
+				}
+				Err(err) =>{
+					log!("Url parse error {:?}",err);
+				}
+			}
+			
+			let responseid = *response_context_guard.lock().unwrap() as Cell -1;
+			let amx_unbox = amx_guard.lock().unwrap();
+			exec_public!(amx_unbox, &callback;response_context_guard);
+			
+		});
+		
+		Ok(1)
+	}
+
 	fn delete_response_cache(&mut self,_:&AMX,id:usize) -> AmxResult<Cell>{
-		if self.response_cache.remove(&id) == None{
+		if self.response_cache.lock().unwrap().remove(&id) == None{
 			log!("Error trying to remove invalid response id {:?}",id);
 			Ok(0)
 		}else{
