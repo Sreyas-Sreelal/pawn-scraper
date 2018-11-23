@@ -107,8 +107,7 @@ pub fn load(&mut self) -> bool {
 			self.response_context_id += 1;
 			let responseid = self.response_context_id as Cell -1;
 			for amx in &self.amx_list{
-				let amx_pointer = unsafe { std::mem::transmute(amx) };
-				let amx = AMX::from(amx_pointer);
+				let amx = AMX::new(*amx as *mut _);
 				log!("Callback is {:?} amx is {:?}",callback,amx.amx);
 				match amx.find_public(&callback){
 					Ok(index) =>{
