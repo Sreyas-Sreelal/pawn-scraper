@@ -42,6 +42,7 @@ HttpGet(url[])
 */
 native Response:HttpGet(url[]);
 
+native HttpGetThreaded(playerid,callback[],url[]);
 /*
 ParseSelector(string[])
 	Params

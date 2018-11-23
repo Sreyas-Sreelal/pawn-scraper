@@ -55,7 +55,7 @@ pub fn load(&mut self) -> bool {
 					}
 				}
 				Err(err) =>{
-					log!("Url parse error {:?}",err);
+					log!("Url parse error {:?} url is {:?}",err,url);
 				}
 			}
 		}	
@@ -70,13 +70,14 @@ pub fn load(&mut self) -> bool {
 	}
 
 	pub fn amx_load(&mut self, amx: &mut AMX) -> Cell {
+		log!("amx is {:?}",amx.amx);
 		self.amx_list.push(amx.amx as usize);
 		let natives = natives!{
 			"ParseHtmlDocument" => parse_document,
 			"ResponseParseHtml" => parse_document_by_response,
 			"ParseSelector" => parse_selector,
 			"HttpGet" => http_request,
-			"HttpGetThreaded" => http_request,
+			"HttpGetThreaded" => http_request_threaded,
 			"GetNthElementName" => get_nth_element_name,
 			"GetNthElementText" => get_nth_element_text,
 			"GetNthElementAttrVal" => get_nth_element_attr_value,
@@ -107,14 +108,19 @@ pub fn load(&mut self) -> bool {
 			let responseid = self.response_context_id as Cell -1;
 			for amx in &self.amx_list{
 				let amx_pointer = unsafe { std::mem::transmute(amx) };
-				let amx = AMX::new(amx_pointer);
-				let index = amx.find_public(&callback).unwrap();
-				if index<0{
-					continue;
-				}
-				amx.push(responseid).unwrap();
-				amx.push(playerid).unwrap();
-				amx.exec(index).unwrap();
+				let amx = AMX::from(amx_pointer);
+				log!("Callback is {:?} amx is {:?}",callback,amx.amx);
+				match amx.find_public(&callback){
+					Ok(index) =>{
+						amx.push(responseid).unwrap();
+						amx.push(playerid).unwrap();
+						amx.exec(index).unwrap();
+					}
+					Err(err) =>{
+						log!("Erro findinf callback {:?}",err);
+						continue;
+					}
+				};
 			}
 		}
 	}
