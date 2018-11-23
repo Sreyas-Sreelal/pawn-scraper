@@ -8,6 +8,7 @@ pub trait Natives {
 	fn parse_document_by_response(&mut self,_:&AMX,id:usize) -> AmxResult<Cell>;
 	fn parse_selector(&mut self,_:&AMX,string:String) -> AmxResult<Cell>;
 	fn http_request(&mut self,_:&AMX,url:String) -> AmxResult<Cell>;
+	fn http_request_threaded(&mut self,_:&AMX,playerid:usize,callback:String,url:String) -> AmxResult<Cell>;
 	fn get_nth_element_name(&mut self,_:&AMX,docid:usize, selectorid:usize,idx:usize,string:&mut Cell,size:usize) -> AmxResult<Cell>;
 	fn get_nth_element_text(&mut self,_:&AMX,docid:usize, selectorid:usize,idx:usize,string:&mut Cell,size:usize) -> AmxResult<Cell>;
 	fn get_nth_element_attr_value(&mut self,_:&AMX,docid:usize, selectorid:usize,idx:usize,attr:String,string:&mut Cell,size:usize) -> AmxResult<Cell>;
@@ -142,6 +143,12 @@ impl Natives for super::PawnScraper{
 			}
 		}
 	}
+
+	fn http_request_threaded(&mut self,_:&AMX,playerid:usize,callback:String,url:String) -> AmxResult<Cell>{
+		self.request_send.unwrap().send((playerid, callback, url));
+		Ok(1)
+	}
+
 
 	fn delete_response_cache(&mut self,_:&AMX,id:usize) -> AmxResult<Cell>{
 		if self.response_cache.remove(&id) == None{
