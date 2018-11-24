@@ -6,7 +6,6 @@ use natives::Natives;
 use minihttp::request::Request;
 use std::sync::mpsc::{Sender,Receiver,channel};
 
-
 define_native!(parse_document,document:String);
 define_native!(parse_document_by_response,id:usize);
 define_native!(parse_selector,string:String);
@@ -40,22 +39,21 @@ pub fn load(&mut self) -> bool {
 	self.request_send = Some(send_request);
 		
 	std::thread::spawn(move || {
-		for (playerid, url, callback) in rcv_request.iter() {
+		for (playerid,callback,url) in rcv_request.iter() {
 			match Request::new(&url){
 				Ok(mut http) =>{
 					match http.get().send(){
 						Ok(res) => {
 							let body = res.text();
 							send_response.send((playerid, callback, body)).unwrap();
-							
 						}
 						Err(_err) =>{
 							//log!("Http error {:?} for url {:?}",err,url);
 						}
 					}
 				}
-				Err(err) =>{
-					log!("Url parse error {:?} url is {:?}",err,url);
+				Err(_err) =>{
+					//log!("Url parse error {:?} url is {:?}",err,url);
 				}
 			}
 		}	
@@ -108,7 +106,6 @@ pub fn load(&mut self) -> bool {
 			let responseid = self.response_context_id as Cell -1;
 			for amx in &self.amx_list{
 				let amx = AMX::new(*amx as *mut _);
-				log!("Callback is {:?} amx is {:?}",callback,amx.amx);
 				match amx.find_public(&callback){
 					Ok(index) =>{
 						amx.push(responseid).unwrap();
@@ -116,7 +113,7 @@ pub fn load(&mut self) -> bool {
 						amx.exec(index).unwrap();
 					}
 					Err(err) =>{
-						log!("Erro findinf callback {:?}",err);
+						log!("Error finding callback {:?}",err);
 						continue;
 					}
 				};
