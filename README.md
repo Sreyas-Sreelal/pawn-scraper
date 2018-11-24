@@ -1,4 +1,5 @@
 # pawn-scraper
+[![Build Status](https://travis-ci.org/Sreyas-Sreelal/pawn-scraper.svg?branch=master)](https://travis-ci.org/Sreyas-Sreelal/pawn-scraper)
 A powerful scraper plugin that provides interface for utlising html_parsers and css selectors in pawn.
 ## Installing 
 
