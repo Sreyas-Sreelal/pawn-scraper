@@ -42,7 +42,15 @@ HttpGet(url[])
 */
 native Response:HttpGet(url[]);
 
+/*
+HttpGetThreaded(playerid,callback[],url[])
+	Params
+		playerid - id of the player
+		callback[] - name of the callback function to handle the response.
+		url[] - Url of a website
+*/
 native HttpGetThreaded(playerid,callback[],url[]);
+
 /*
 ParseSelector(string[])
 	Params

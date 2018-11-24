@@ -28,41 +28,41 @@ pub struct PawnScraper{
 	pub request_send: Option<Sender<(usize, String, String)>>,
 	pub response_recv: Option<Receiver<(usize, String, String,bool)>>,
 	pub amx_list :Vec<usize>,
-	
 }
+
 impl PawnScraper{
-pub fn load(&mut self) -> bool {
-	let (send_response, rcv_response) = channel();
-	let (send_request, rcv_request) = channel();
-	
-	self.response_recv = Some(rcv_response);
-	self.request_send = Some(send_request);
+	pub fn load(&mut self) -> bool {
+		let (send_response, rcv_response) = channel();
+		let (send_request, rcv_request) = channel();
 		
-	std::thread::spawn(move || {
-		for (playerid,callback,url) in rcv_request.iter() {
-			match Request::new(&url){
-				Ok(mut http) =>{
-					match http.get().send(){
-						Ok(res) => {
-							let body = res.text();
-							send_response.send((playerid, callback, body,true)).unwrap();
-						}
-						Err(_err) =>{
-							send_response.send((playerid, callback, String::from(""),false)).unwrap();
-							//log!("Http error {:?} for url {:?}",err,url);
+		self.response_recv = Some(rcv_response);
+		self.request_send = Some(send_request);
+			
+		std::thread::spawn(move || {
+			for (playerid,callback,url) in rcv_request.iter() {
+				match Request::new(&url){
+					Ok(mut http) =>{
+						match http.get().send(){
+							Ok(res) => {
+								let body = res.text();
+								send_response.send((playerid, callback, body,true)).unwrap();
+							}
+							Err(_err) =>{
+								send_response.send((playerid, callback, String::from(""),false)).unwrap();
+								//log!("Http error {:?} for url {:?}",err,url);
+							}
 						}
 					}
+					Err(_err) =>{
+						send_response.send((playerid, callback, String::from(""),false)).unwrap();
+						//log!("Url parse error {:?} url is {:?}",err,url);
+					}
 				}
-				Err(_err) =>{
-					send_response.send((playerid, callback, String::from(""),false)).unwrap();
-					//log!("Url parse error {:?} url is {:?}",err,url);
-				}
-			}
-		}	
-	});
-	log!("PawnScraper loaded");
-	return true;
-}
+			}	
+		});
+		log!("PawnScraper loaded");
+		return true;
+	}
 		
 
 	pub fn unload(&self) {
