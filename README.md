@@ -7,7 +7,7 @@
 A powerful scraper plugin that provides interface for utlising html_parsers and css selectors in pawn.
 ## Installing 
 
-Thanks to [Southclaws](https://www.github/southclaws),plugin installation is now much easier with [sampctl](https://www.github/southclaws/sampctl)
+Thanks to [Southclaws](https://www.github/southclaws),plugin installation is now much easier with [sampctl](https://www.github.com/southclaws/sampctl)
 
 `sampctl p install Sreyas-Sreelal/pawn-scraper`
 
@@ -56,9 +56,41 @@ while(GetNthElementAttrVal(html,selector,i,"href",str)){
 	printf("%s",str);
 	++i;
 }
-
-
 ```
+
+The same above with threaded http call would be
+
+```Pawn
+HttpGetThreaded(0,"MyHandler","https://wiki.sa-mp.com");
+//...
+forward MyHandler(playerid,Response:responseid);
+public MyHandler(playerid,Response:responseid)
+{
+	
+	if(responseid == INVALID_HTTP_RESPONSE){
+		printf("HTTP ERROR");
+		return 0;
+	}
+
+	new Html:html = ResponseParseHtml(responseid);
+	if(html == INVALID_HTML_DOC){
+		return 0;
+	}
+
+	new Selector:selector = ParseSelector("a");
+	if(selector == INVALID_SELECTOR){
+		return 0;
+	}
+
+	new str[500],i;
+	while(GetNthElementAttrVal(html,selector,i,"href",str)){
+		printf("%s",str);
+		++i;
+	}
+	return 1;
+}
+```
+
 More examples can be found in [examples](examples)
 
 ## Note
