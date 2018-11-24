@@ -26,7 +26,7 @@ pub struct PawnScraper{
 	pub selector_context_id: usize,
 	pub response_context_id: usize,
 	pub request_send: Option<Sender<(usize, String, String)>>,
-	pub response_recv: Option<Receiver<(usize, String, String)>>,
+	pub response_recv: Option<Receiver<(usize, String, String,bool)>>,
 	pub amx_list :Vec<usize>,
 	
 }
@@ -45,14 +45,16 @@ pub fn load(&mut self) -> bool {
 					match http.get().send(){
 						Ok(res) => {
 							let body = res.text();
-							send_response.send((playerid, callback, body)).unwrap();
+							send_response.send((playerid, callback, body,true)).unwrap();
 						}
 						Err(_err) =>{
+							send_response.send((playerid, callback, String::from(""),false)).unwrap();
 							//log!("Http error {:?} for url {:?}",err,url);
 						}
 					}
 				}
 				Err(_err) =>{
+					send_response.send((playerid, callback, String::from(""),false)).unwrap();
 					//log!("Url parse error {:?} url is {:?}",err,url);
 				}
 			}
@@ -100,14 +102,18 @@ pub fn load(&mut self) -> bool {
 	}
 
 	pub fn process_tick(&mut self) {
-		for (playerid, callback, body) in  self.response_recv.as_ref().unwrap().try_iter() {
-			self.response_cache.insert(self.response_context_id,body);
-			self.response_context_id += 1;
-			let responseid = self.response_context_id as Cell -1;
+		for (playerid, callback, body,success) in  self.response_recv.as_ref().unwrap().try_iter() {
+			let body = body.as_str();
 			for amx in &self.amx_list{
 				let amx = AMX::new(*amx as *mut _);
 				match amx.find_public(&callback){
 					Ok(index) =>{
+						let mut responseid = -1;
+						if success {
+							self.response_cache.insert(self.response_context_id,String::from(body));
+							self.response_context_id += 1;
+							responseid = self.response_context_id as Cell -1;
+						}
 						amx.push(responseid).unwrap();
 						amx.push(playerid).unwrap();
 						amx.exec(index).unwrap();
