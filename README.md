@@ -7,7 +7,7 @@
 A powerful scraper plugin that provides interface for utlising html_parsers and css selectors in pawn.
 ## Installing 
 
-Thanks to [Southclaws](https://www.github/southclaws),plugin installation is now much easier with [sampctl](https://www.github.com/southclaws/sampctl)
+Thanks to [Southclaws](https://www.github.com/southclaws),plugin installation is now much easier with [sampctl](https://www.github.com/southclaws/sampctl)
 
 `sampctl p install Sreyas-Sreelal/pawn-scraper`
 
