@@ -5,6 +5,28 @@
 
 #include "../include/pawnscraper"
 
+Test:TestHttpGetThreaded(){
+	HttpGetThreaded(0,"OnHttpGetRequest","https://sa-mp.com");
+}
+
+forward OnHttpGetRequest(playerid,Response:responseid);
+public OnHttpGetRequest(playerid,Response:responseid){
+	printf("*** Test OnHttpGetRequest\n");
+	ASSERT(responseid != INVALID_HTTP_RESPONSE);
+	print("\nPASS!");
+}
+
+Test:TestHttpGetThreadedInvalid(){
+	HttpGetThreaded(0,"OnInvalidHttpGetRequest","https://sa-mp..com");
+}
+
+forward OnInvalidHttpGetRequest(playerid,Response:responseid);
+public OnInvalidHttpGetRequest(playerid,Response:responseid){
+	printf("*** Test OnInvalidHttpGetRequest\n");
+	ASSERT(responseid == INVALID_HTTP_RESPONSE);
+	print("\nPASS!");
+}
+
 Test:TestParseHtmlDocument(){
 	new Html:doc = ParseHtmlDocument("\
 		<!DOCTYPE html>\
@@ -102,4 +124,3 @@ Test:TestGetNthElementAttrVal(){
 	new check = strcmp(element_attribute,("foo"));
 	ASSERT(check == 0);
 }
-
