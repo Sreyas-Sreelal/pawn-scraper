@@ -1,5 +1,9 @@
 # pawn-scraper
 [![Build Status](https://travis-ci.org/Sreyas-Sreelal/pawn-scraper.svg?branch=master)](https://travis-ci.org/Sreyas-Sreelal/pawn-scraper)
+[![sampctl-supported](https://shields.southcla.ws/badge/sampctl-PawnScraper-2f2f2f.svg)](https://github.com/Sreyas-Sreelal/pawn-scraper)
+[![GitHub issues](https://img.shields.io/github/issues/Sreyas-Sreelal/pawn-scraper.svg)]() [![GitHub pull requests](https://img.shields.io/github/issues-pr-raw/sreyas-sreelal/pawn-scraper.svg)]() [![GitHub pull license](https://img.shields.io/github/license/sreyas-sreelal/pawn-scraper.svg)]() 
+
+
 A powerful scraper plugin that provides interface for utlising html_parsers and css selectors in pawn.
 ## Installing 
 
