@@ -32,45 +32,44 @@ pub struct PawnScraper{
 	
 }
 impl PawnScraper{
-	pub fn load(&mut self) -> bool {
-		let (mut send_response, mut rcv_response):(Sender<(usize, String, String)>,Receiver<(usize, String, String)>) = channel();
-		let (mut send_request,mut rcv_request):(Sender<(usize, String, String)>,Receiver<(usize, String, String)>) = channel();
-		//*&mut self.response_recv.unwrap() = rcv_response;
-		//*&self.request_send.unwrap() = send_request.clone();
-		let mut send_response_clone = send_response.clone();
-		for (playerid,url,callback) in rcv_request.iter() {
-			
-			std::thread::spawn(move || {
-				
-				match Request::new(&url){
-					Ok(mut http) =>{
-						match http.get().send(){
-							Ok(res) => {
-								let body = res.text();
-								send_response_clone.send((playerid, callback, body)).unwrap();
-								
-							}
-							Err(err) =>{
-								log!("Http error {:?} for url {:?}",err,url);
-							}
+pub fn load(&mut self) -> bool {
+	let (send_response, rcv_response) = channel();
+	let (send_request, rcv_request) = channel();
+	
+	self.response_recv = Some(rcv_response);
+	self.request_send = Some(send_request);
+		
+	std::thread::spawn(move || {
+		for (playerid, url, callback) in rcv_request.iter() {
+			match Request::new(&url){
+				Ok(mut http) =>{
+					match http.get().send(){
+						Ok(res) => {
+							let body = res.text();
+							send_response.send((playerid, callback, body)).unwrap();
+							
+						}
+						Err(_err) =>{
+							//log!("Http error {:?} for url {:?}",err,url);
 						}
 					}
-					Err(err) =>{
-						log!("Url parse error {:?}",err);
-					}
 				}
-				
-			});
-		}
-		log!("Plugin Loaded!");
-		return true;
-	}
+				Err(err) =>{
+					log!("Url parse error {:?}",err);
+				}
+			}
+		}	
+	});
+	log!("PawnScraper loaded");
+	return true;
+}
+		
 
 	pub fn unload(&self) {
 		log!("Plugin Unloaded!");
 	}
 
-	pub fn amx_load(mut self, amx: &mut AMX) -> Cell {
+	pub fn amx_load(&mut self, amx: &mut AMX) -> Cell {
 		self.amx_list.push(amx.amx as usize);
 		let natives = natives!{
 			"ParseHtmlDocument" => parse_document,
@@ -102,7 +101,7 @@ impl PawnScraper{
 	}
 
 	pub fn process_tick(&mut self) {
-		for (playerid, callback, body) in  self.response_recv.unwrap().try_iter() {
+		for (playerid, callback, body) in  self.response_recv.as_ref().unwrap().try_iter() {
 			self.response_cache.insert(self.response_context_id,body);
 			self.response_context_id += 1;
 			let responseid = self.response_context_id as Cell -1;
@@ -113,9 +112,9 @@ impl PawnScraper{
 				if index<0{
 					continue;
 				}
-				amx.push(responseid);
-				amx.push(playerid);
-				amx.exec(index);
+				amx.push(responseid).unwrap();
+				amx.push(playerid).unwrap();
+				amx.exec(index).unwrap();
 			}
 		}
 	}

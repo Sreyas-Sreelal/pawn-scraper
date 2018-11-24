@@ -145,7 +145,7 @@ impl Natives for super::PawnScraper{
 	}
 
 	fn http_request_threaded(&mut self,_:&AMX,playerid:usize,callback:String,url:String) -> AmxResult<Cell>{
-		self.request_send.unwrap().send((playerid, callback, url));
+		self.request_send.as_ref().unwrap().send((playerid, callback, url)).unwrap();
 		Ok(1)
 	}
 
