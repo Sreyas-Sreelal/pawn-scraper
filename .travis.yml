@@ -11,7 +11,7 @@ matrix:
           packages: &i686_unknown_linux_gnu
             # Cross compiler and cross compiled C libraries
             - gcc-multilib
-            - libssl:i3
+            - libssl-dev:i386
 
 script:
   - cargo build --verbose
