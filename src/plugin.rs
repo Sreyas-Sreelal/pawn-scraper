@@ -60,13 +60,21 @@ impl PawnScraper{
 				}
 			}	
 		});
-		log!("PawnScraper loaded");
+		log!("
+   ###############################################################
+   #                      PawnScraper                            #
+   #                        V0.1.0 Loaded!!                      #
+   #   Found any bugs? Report it here:                           #
+   #       https://github.com/Sreyas-Sreelal/pawn-scraper/issues #
+   #                                                             #
+   ###############################################################
+			");
 		return true;
 	}
 		
 
 	pub fn unload(&self) {
-		log!("Plugin Unloaded!");
+		log!("PawnScraper V0.1.0 Unloaded!!");
 	}
 
 	pub fn amx_load(&mut self, amx: &mut AMX) -> Cell {
@@ -87,8 +95,8 @@ impl PawnScraper{
 		};
 
 		match amx.register(&natives) {
-			Ok(_) => log!("Natives are successful loaded"),
-			Err(err) => log!("Whoops, there is an error {:?}", err),
+			Ok(_) => log!("**[PawnScraper] Natives are successfully loaded"),
+			Err(err) => log!("**[PawnScraper] There is an error loading natives {:?}", err),
 		}
 
 		AMX_ERR_NONE
@@ -119,7 +127,7 @@ impl PawnScraper{
 						amx.exec(index).unwrap();
 					}
 					Err(err) =>{
-						log!("Error finding callback {:?}",err);
+						log!("**[PawnScraper] Error finding callback {:?}",err);
 						continue;
 					}
 				};

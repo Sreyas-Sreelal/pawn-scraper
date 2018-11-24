@@ -49,7 +49,7 @@ impl Natives for super::PawnScraper{
 				Ok(self.selector_context_id as Cell -1)
 			}
 			Err(err) =>{
-				log!("Failed parsing selector {:?}",err);
+				log!("**[PawnScraper] Failed parsing selector {:?}",err);
 				Ok(-1)
 			}
 		}
@@ -57,7 +57,7 @@ impl Natives for super::PawnScraper{
 
 	fn get_nth_element_text(&mut self,_:&AMX,docid:usize, selectorid:usize,idx:usize,string:&mut Cell,size:usize) -> AmxResult<Cell>{
 		if !self.html_instance.contains_key(&docid) || !self.selectors.contains_key(&selectorid){
-			log!("Invalid html instances passed docid {:?},selectorid {:?}",docid,selectorid);
+			log!("**[PawnScraper] Invalid html instances passed docid {:?},selectorid {:?}",docid,selectorid);
 			Ok(-1)
 		}else{
 			let html = &self.html_instance.get(&docid).unwrap();
@@ -80,7 +80,7 @@ impl Natives for super::PawnScraper{
 
 	fn get_nth_element_name(&mut self,_:&AMX,docid:usize, selectorid:usize,idx:usize,string:&mut Cell,size:usize) -> AmxResult<Cell>{
 		if !self.html_instance.contains_key(&docid) || !self.selectors.contains_key(&selectorid){
-			log!("Invalid html instances passed docid {:?},selectorid {:?}",docid,selectorid);
+			log!("**[PawnScraper] Invalid html instances passed docid {:?},selectorid {:?}",docid,selectorid);
 			Ok(-1)
 		}else{
 			let html = &self.html_instance.get(&docid).unwrap();
@@ -100,7 +100,7 @@ impl Natives for super::PawnScraper{
 	
 	fn get_nth_element_attr_value(&mut self,_:&AMX,docid:usize, selectorid:usize,idx:usize,attr:String,string:&mut Cell,size:usize) -> AmxResult<Cell>{
 		if !self.html_instance.contains_key(&docid) || !self.selectors.contains_key(&selectorid){
-			log!("Invalid html instances passed docid {:?},selectorid {:?}",docid,selectorid);
+			log!("**[PawnScraper] Invalid html instances passed docid {:?},selectorid {:?}",docid,selectorid);
 			Ok(-1)
 		}else{
 			let html = &self.html_instance.get(&docid).unwrap();
@@ -132,13 +132,13 @@ impl Natives for super::PawnScraper{
 						Ok(self.response_context_id as Cell -1)
 					}
 					Err(err) =>{
-						log!("Http error {:?}",err);
+						log!("**[PawnScraper] Http error {:?}",err);
 						Ok(-1)
 					}
 				}
 			}
 			Err(err) =>{
-				log!("Url parse error {:?}",err);
+				log!("**[PawnScraper] Url parse error {:?}",err);
 				Ok(-1)
 			}
 		}
@@ -152,30 +152,30 @@ impl Natives for super::PawnScraper{
 
 	fn delete_response_cache(&mut self,_:&AMX,id:usize) -> AmxResult<Cell>{
 		if self.response_cache.remove(&id) == None{
-			log!("Error trying to remove invalid response id {:?}",id);
+			log!("**[PawnScraper] Warning trying to remove invalid response id {:?}",id);
 			Ok(0)
 		}else{
-			log!("[DEBUG] Removed response_data {:?}",id);
+			//log!("**[PawnScraper] Removed response_data {:?}",id);
 			Ok(1)
 		}
 	}
 
 	fn delete_html_instance(&mut self,_:&AMX,id:usize) -> AmxResult<Cell>{
 		if self.html_instance.remove(&id) == None{
-			log!("Error trying to remove invalid html id {:?}",id);
+			log!("**[PawnScraper] Warning trying to remove invalid html id {:?}",id);
 			Ok(0)
 		}else{
-			log!("[DEBUG] Removed html_instance {:?}",id);
+			//log!("**[PawnScraper] Removed html_instance {:?}",id);
 			Ok(1)
 		}
 	}
 
 	fn delete_selector_instance(&mut self,_:&AMX,id:usize) -> AmxResult<Cell>{
 		if self.selectors.remove(&id) == None{
-			log!("Error trying to remove invalid selector id {:?}",id);
+			log!("**[PawnScraper] Warning trying to remove invalid selector id {:?}",id);
 			Ok(0)
 		}else{
-			log!("[DEBUG] Removed selector_instance {:?}",id);
+			//log!("**[PawnScraper] Removed selector_instance {:?}",id);
 			Ok(1)
 		}
 	}	
