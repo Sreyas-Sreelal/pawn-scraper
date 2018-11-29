@@ -58,5 +58,9 @@ Yt2Mp3(playerid,id[]){
 
 		PlayAudioStreamForPlayer(playerid,str);
 	}
-	
+
+	DeleteSelector(link_selector);
+	DeleteSelector(name_selector);
+	DeleteResponse(response);
+	DeleteHtml(html);
 }

@@ -26,5 +26,9 @@ main(){
 		printf("%s",str);
 		++i;
 	}
+	
+	DeleteResponse(response);
+	DeleteHtml(html);
+	DeleteSelector(selector);
 
 }
