@@ -13,6 +13,7 @@ forward OnHttpGetRequest(playerid,Response:responseid);
 public OnHttpGetRequest(playerid,Response:responseid){
 	printf("*** Test OnHttpGetRequest\n");
 	ASSERT(responseid != INVALID_HTTP_RESPONSE);
+	DeleteResponse(responseid);
 	print("\nPASS!");
 }
 
@@ -35,11 +36,13 @@ Test:TestParseHtmlDocument(){
 		<h1 class=\"foo\">Hello, <i>world!</i></h1>\
 		");
 	ASSERT(doc != INVALID_HTML_DOC);
+	DeleteHtml(doc);
 }
 
 Test:TestParseSelector(){
 	new Selector:selector = ParseSelector("h1 .foo");
 	ASSERT(selector != INVALID_SELECTOR);
+	DeleteSelector(selector);
 }
 
 Test:TestParseSelectorError(){
@@ -51,6 +54,7 @@ Test:TestResponseParseHtml(){
 	new Response:response = HttpGet("https://www.sa-mp.com");
 	new Html:doc = ResponseParseHtml(response);
 	ASSERT(doc != INVALID_HTML_DOC);
+	DeleteHtml(doc);
 }
 
 Test:TestResponseParseHtmlError(){
@@ -62,6 +66,7 @@ Test:TestResponseParseHtmlError(){
 Test:TestHttpGet(){
 	new Response:response = HttpGet("https://www.sa-mp.com");
 	ASSERT(response != INVALID_HTTP_RESPONSE);
+	DeleteResponse(responseid);
 }
 
 Test:TestHttpGetError(){
@@ -85,6 +90,10 @@ Test:TestGetNthElementName(){
 	while(GetNthElementName(doc,selector,++i,element_name)!=0){
 		ASSERT(strcmp(element_name,"i") == 0);
 	}
+
+	DeleteSelector(selector);
+	DeleteHtml(doc);
+
 }
 
 Test:TestGetNthElementText(){
@@ -104,6 +113,9 @@ Test:TestGetNthElementText(){
 
 	new check = strcmp(element_text,("Hello, world!"));
 	ASSERT(check == 0);
+
+	DeleteSelector(selector);
+	DeleteHtml(doc);
 }
 
 Test:TestGetNthElementAttrVal(){
@@ -123,4 +135,7 @@ Test:TestGetNthElementAttrVal(){
 
 	new check = strcmp(element_attribute,("foo"));
 	ASSERT(check == 0);
+
+	DeleteSelector(selector);
+	DeleteHtml(doc);
 }
