@@ -127,23 +127,3 @@ DeleteResponse(Html:id)
 */
 native DeleteResponse(Response:id);
 
-stock operator~(Html:html[], size) {
-	#pragma unused size
-	if(html[0] != INVALID_HTML_DOC) {
-		DeleteHtml(html[0]);
-	}
-}
-
-stock operator~(Selector:selector[], size) {
-	#pragma unused size
-	if(selector[0] != INVALID_SELECTOR) {
-		DeleteSelector(selector[0]);
-	}
-}
-
-stock operator~(Response:response[], size) {
-	#pragma unused size
-	if(response[0] != INVALID_HTTP_RESPONSE) {
-		DeleteResponse(response[0]);
-	}
-}
