@@ -66,7 +66,7 @@ Test:TestResponseParseHtmlError(){
 Test:TestHttpGet(){
 	new Response:response = HttpGet("https://www.sa-mp.com");
 	ASSERT(response != INVALID_HTTP_RESPONSE);
-	DeleteResponse(responseid);
+	DeleteResponse(response);
 }
 
 Test:TestHttpGetError(){
