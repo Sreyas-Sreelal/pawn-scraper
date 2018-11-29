@@ -57,6 +57,10 @@ while(GetNthElementAttrVal(html,selector,i,"href",str)){
 	printf("%s",str);
 	++i;
 }
+//delete created objects after the usage..
+DeleteHtml(html);
+Delete(response);
+DeleteSelector(selector);
 ```
 
 The same above with threaded http call would be
@@ -88,8 +92,15 @@ public MyHandler(playerid,Response:responseid)
 		printf("%s",str);
 		++i;
 	}
+
+	DeleteHtml(html);
+	Delete(response);
+	DeleteSelector(selector);
+
 	return 1;
 }
+
+
 ```
 
 More examples can be found in [examples](examples)
