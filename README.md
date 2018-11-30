@@ -44,11 +44,14 @@ if(response == INVALID_HTTP_RESPONSE){
 
 new Html:html = ResponseParseHtml(response);
 if(html == INVALID_HTML_DOC){
+	DeleteResponse(response);
 	return;
 }
 
 new Selector:selector = ParseSelector("a");
 if(selector == INVALID_SELECTOR){
+	DeleteResponse(response);
+	DeleteHtml(html);
 	return;
 }
 
@@ -59,7 +62,7 @@ while(GetNthElementAttrVal(html,selector,i,"href",str)){
 }
 //delete created objects after the usage..
 DeleteHtml(html);
-Delete(response);
+DeleteResponse(response);
 DeleteSelector(selector);
 ```
 
@@ -79,11 +82,14 @@ public MyHandler(playerid,Response:responseid)
 
 	new Html:html = ResponseParseHtml(responseid);
 	if(html == INVALID_HTML_DOC){
+		DeleteResponse(response);
 		return 0;
 	}
 
 	new Selector:selector = ParseSelector("a");
 	if(selector == INVALID_SELECTOR){
+		DeleteResponse(response);
+		DeleteHtml(html);
 		return 0;
 	}
 
@@ -96,7 +102,6 @@ public MyHandler(playerid,Response:responseid)
 	DeleteHtml(html);
 	Delete(response);
 	DeleteSelector(selector);
-
 	return 1;
 }
 
