@@ -71,9 +71,16 @@ impl Natives for super::PawnScraper{
 				for i in element_text_iter{
 					full_text += i;
 				}
-				let text_encoded = samp_sdk::cp1251::encode(&full_text).unwrap();
-				set_string!(text_encoded,string,size);
-				Ok(1)
+				match samp_sdk::cp1251::encode(&full_text){
+					Ok(text_encoded) =>{
+						set_string!(text_encoded,string,size);
+						Ok(1)
+					}
+					Err(err)=>{
+						log!("**[PawnScraper] Encoding error {:?}",err);
+						Ok(0)
+					}
+				}
 			}
 		}
 	}
@@ -113,9 +120,16 @@ impl Natives for super::PawnScraper{
 				if attr_value == None{
 					Ok(-2)
 				}else{
-					let attr_encoded = samp_sdk::cp1251::encode(attr_value.unwrap()).unwrap();
-					set_string!(attr_encoded,string,size);
-					Ok(1)
+					match samp_sdk::cp1251::encode(attr_value.unwrap()){
+						Ok(attr_encoded) =>{
+							set_string!(attr_encoded,string,size);
+							Ok(1)
+						}
+						Err(err)=>{
+							log!("**[PawnScraper] Encoding error {:?}",err);
+							Ok(0)
+						}
+					}
 				}
 			}
 		}
