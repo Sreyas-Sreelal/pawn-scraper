@@ -11,13 +11,14 @@ main(){
 
 	new Html:html = ResponseParseHtml(response);
 	if(html == INVALID_HTML_DOC){
-		printf("Error on creating html instance");
+		DeleteResponse(response);
 		return;
 	}
 
 	new Selector:selector = ParseSelector("a");
 	if(selector == INVALID_SELECTOR){
-		printf("Error on creating selector");
+		DeleteResponse(response);
+		DeleteHtml(html);
 		return;
 	}
 
@@ -26,9 +27,8 @@ main(){
 		printf("%s",str);
 		++i;
 	}
-	
-	DeleteResponse(response);
+	//delete created objects after the usage..
 	DeleteHtml(html);
+	DeleteResponse(response);
 	DeleteSelector(selector);
-
 }

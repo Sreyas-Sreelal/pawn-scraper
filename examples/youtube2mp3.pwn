@@ -22,19 +22,15 @@ Yt2Mp3(playerid,id[]){
 	}
 
 	new Html:html = ResponseParseHtml(response);
-	if(html==Html:-1){
+	if(html==INVALID_HTML_DOC){
 		printf("Error on creating html instance");
+		DeleteResponse(response);
 		return;
 	}
 
 	new 
 		Selector:link_selector = ParseSelector(".btn.btn-success"),
 		Selector:name_selector = ParseSelector("title");
-
-	if(link_selector == INVALID_SELECTOR || name_selector == INVALID_SELECTOR){
-		printf("Error on creating selector");
-		return;
-	}
 
 	new str[500],i,check,name[100];
 	
