@@ -16,7 +16,7 @@ Thanks to [Southclaws](https://www.github.com/southclaws),plugin installation is
 * Download suitable binary files from releases for your operating system
 * Add it your `plugins` folder
 * Add `PawnScraper` to server.cfg or  `PawnScraper.so` (for linux)
-* Add [pawnscraper.inc](includes/pawnscraper.inc) in includes folder
+* Add [pawnscraper.inc](include/pawnscraper.inc) in includes folder
 
 ## Building
 * Clone the repo
