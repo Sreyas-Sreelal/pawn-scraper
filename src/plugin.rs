@@ -63,7 +63,7 @@ impl PawnScraper{
 		log!("
    ###############################################################
    #                      PawnScraper                            #
-   #                        V0.1.0 Loaded!!                      #
+   #                        V0.1.1 Loaded!!                      #
    #   Found any bugs? Report it here:                           #
    #       https://github.com/Sreyas-Sreelal/pawn-scraper/issues #
    #                                                             #
