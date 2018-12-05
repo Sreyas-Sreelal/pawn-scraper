@@ -78,7 +78,7 @@ impl PawnScraper{
 	}
 
 	pub fn amx_load(&mut self, amx: &mut AMX) -> Cell {
-		log!("amx is {:?}",amx.amx);
+		//log!("amx is {:?}",amx.amx);
 		self.amx_list.push(amx.amx as usize);
 		let natives = natives!{
 			"ParseHtmlDocument" => parse_document,
