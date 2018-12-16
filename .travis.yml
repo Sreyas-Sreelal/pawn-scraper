@@ -1,8 +1,5 @@
 language: rust
 dist: trusty
-env:
-    global:
-        - CC=gcc-4.9
 
 matrix:
   fast_finish: true
@@ -12,11 +9,12 @@ matrix:
     addons:
       apt:
         packages:
-        - gcc-4.9
         - gcc-multilib
         - libssl-dev:i386
+
 script:
 - cargo build --verbose --release
+
 deploy:
   provider: releases
   api_key:
