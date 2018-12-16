@@ -12,12 +12,9 @@ matrix:
     addons:
       apt:
         packages:
+        - gcc-4.9
         - gcc-multilib
         - libssl-dev:i386
-before_install:
-  - sudo update-alternatives  --install /usr/bin/gcc gcc /usr/bin/gcc-4.9 99
-  - sudo update-alternatives --auto gcc
-  - sudo dpkg --add-architecture i386
 script:
 - cargo build --verbose --release
 deploy:
