@@ -9,7 +9,7 @@ matrix:
     addons:
       apt:
         packages:
-        - gcc-multilib
+        - gcc-4.9-multilib
         - libssl-dev:i386
 script:
 - cargo build --verbose --release
