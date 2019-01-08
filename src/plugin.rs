@@ -3,8 +3,8 @@ use samp_sdk::types::Cell;
 use samp_sdk::amx::AMX;
 use scraper::{Html,Selector};
 use natives::Natives;
-use minihttp::request::Request;
-use std::sync::mpsc::{Sender,Receiver,channel};
+use std::sync::mpsc::{Sender,Receiver};
+use internals::Internal;
 
 define_native!(parse_document,document:String);
 define_native!(parse_document_by_response,id:usize);
@@ -25,41 +25,15 @@ pub struct PawnScraper{
 	pub html_context_id: usize,
 	pub selector_context_id: usize,
 	pub response_context_id: usize,
-	pub request_send: Option<Sender<(usize, String, String)>>,
-	pub response_recv: Option<Receiver<(usize, String, String,bool)>>,
+	pub http_request_start_sender: Option<Sender<(usize, String, String)>>,
+	pub http_request_complete_receiver: Option<Receiver<(usize, String, String,bool)>>,
 	pub amx_list :Vec<usize>,
 }
 
 impl PawnScraper{
 	pub fn load(&mut self) -> bool {
-		let (send_response, rcv_response) = channel();
-		let (send_request, rcv_request) = channel();
+		Internal::listen_for_http_calls(self);
 		
-		self.response_recv = Some(rcv_response);
-		self.request_send = Some(send_request);
-			
-		std::thread::spawn(move || {
-			for (playerid,callback,url) in rcv_request.iter() {
-				match Request::new(&url){
-					Ok(mut http) =>{
-						match http.get().send(){
-							Ok(res) => {
-								let body = res.text();
-								send_response.send((playerid, callback, body,true)).unwrap();
-							}
-							Err(_err) =>{
-								send_response.send((playerid, callback, String::from(""),false)).unwrap();
-								//log!("Http error {:?} for url {:?}",err,url);
-							}
-						}
-					}
-					Err(_err) =>{
-						send_response.send((playerid, callback, String::from(""),false)).unwrap();
-						//log!("Url parse error {:?} url is {:?}",err,url);
-					}
-				}
-			}	
-		});
 		log!("
    ###############################################################
    #                      PawnScraper                            #
@@ -110,27 +84,31 @@ impl PawnScraper{
 	}
 
 	pub fn process_tick(&mut self) {
-		for (playerid, callback, body,success) in  self.response_recv.as_ref().unwrap().try_iter() {
+		for (playerid, callback, body,success) in  self.http_request_complete_receiver.as_ref().unwrap().try_iter() {
 			let body = body.as_str();
 			for amx in &self.amx_list{
 				let amx = AMX::new(*amx as *mut _);
-				match amx.find_public(&callback){
-					Ok(index) =>{
-						let mut responseid = -1;
-						if success {
-							self.response_cache.insert(self.response_context_id,String::from(body));
-							self.response_context_id += 1;
-							responseid = self.response_context_id as Cell -1;
-						}
-						amx.push(responseid).unwrap();
-						amx.push(playerid).unwrap();
-						amx.exec(index).unwrap();
-					}
-					Err(err) =>{
-						log!("**[PawnScraper] Error finding callback {:?}",err);
+				let mut responseid = -1;
+				let mut executed = false;
+
+				if success {
+					self.response_cache.insert(self.response_context_id,String::from(body));
+					self.response_context_id += 1;
+					responseid = self.response_context_id as Cell -1;
+				}
+
+				match exec_public_with_name!(amx,callback;playerid,responseid) {
+					Ok(_) =>{
+						executed = true;
+					},
+					Err(_err) =>{
 						continue;
 					}
-				};
+				}
+
+				if !executed {
+					log!("**[PawnScraper] Error executing callback {:?}",callback);
+				}
 			}
 		}
 	}
@@ -145,8 +123,8 @@ impl Default for PawnScraper{
 			html_context_id: 0,
 			selector_context_id: 0,
 			response_context_id: 0,
-			request_send:None,
-			response_recv:None,
+			http_request_start_sender:None,
+			http_request_complete_receiver:None,
 			amx_list:Vec::new(),
 		}
 	}
