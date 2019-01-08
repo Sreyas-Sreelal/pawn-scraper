@@ -89,8 +89,8 @@ impl PawnScraper{
 			for amx in &self.amx_list{
 				let amx = AMX::new(*amx as *mut _);
 				let mut responseid = -1;
-				let mut executed = false;
-
+				let mut executed:bool;
+				
 				if success {
 					self.response_cache.insert(self.response_context_id,String::from(body));
 					self.response_context_id += 1;
