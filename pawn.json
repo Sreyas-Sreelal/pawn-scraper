@@ -2,8 +2,9 @@
 	"user": "Sreyas-Sreelal",
 	"repo": "pawn-scraper",
 	"entry": "pawn-tests/test.pwn",
-	"output": "pawn-tests/test.amx",
+	"output": "test/gamemodes/test.amx",
 	"dependencies": ["sampctl/pawn-stdlib"],
+	"dev_dependencies": ["pawn-lang/YSI-Includes"],
 	"include_path": "include",
 	"builds": [
 		{
