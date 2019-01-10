@@ -9,7 +9,7 @@
     },
     "files": [
       {
-        "includePattern": "test/plugins/samp_bcrypt.so",
+        "includePattern": "test/plugins/PawnScraper.so",
         "uploadPattern": "$1",
         "matrixParams": {
           "override": 1
