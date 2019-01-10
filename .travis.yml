@@ -1,7 +1,5 @@
-
 language: rust
 dist: trusty
-
 matrix:
   fast_finish: true
   include:
@@ -14,21 +12,24 @@ matrix:
         - libssl-dev:i386
         - g++-multilib
         - apt-transport-https
-install:
-- curl https://raw.githubusercontent.com/Southclaws/sampctl/master/install-deb.sh | sh
-
+        
+before_install:
+- cd $HOME && curl -Ls https://github.com/Southclaws/sampctl/releases/download/1.8.37/sampctl_1.8.37_linux_amd64.tar.gz
+  -o ./bin/tmp.tar.gz
+- cd bin && tar xzf tmp.tar.gz && rm tmp.tar.gz
+- alias sampctl=$HOME/bin/sampctl
+- cd $HOME/build/Sreyas-Sreelal/samp-bcrypt
 
 script:
 - make setup
 - make release
 - make run
-
 deploy:
-  provider: releases
-  api_key:
-    secure: Enn2ksmS3aOxI10yJZ09PCFS02GvrfWug/HOPRJOA3Y26zS3yQ7gu9VgJ3DFr0ewcByoaWm0VKDuc4A7zhApD+ESXgjd8/v+WORCb/oupIKzlL7JvkC2mxEOjB5v7ZEI0yHkxcpA5uj3jXk4uuE6McMR0RMOEJ5vKzgIY+tCQ5cdvPJm6FNWTLtuKwAWIx4Td9B5mKYslPzWlDoY+9R0omtXAnl+5ivKkQB8u2PLwGaZgZkJL0ldIyzmbmkLTg3fIVI8gDP+JQ43HGlfRrWIa6MZQ0O3ROKIl0cnNDX3qi5NK87Uoe7lJ1F0EVSd5YgycHC8vbf3Jh8CdOiKTqJuion0z0jkdIXvjFQBPo88x/r6MXbRehn3nJPUnt08vUjrX3Yjd/AuMi7FArnosxxwiDzEmnWoVB+AZJsAUt/9RmBAB/cu5jJ0tgJ3x/GiXeQE1XR3ZTyDv+a/QgC+QwkELU6pk+pouvmwB/6YLZs+lr5LA1aizNFi5g92Dnh/cyWMZfJWRJXdtJPbRyp2Q7zvpZgC05yHYtCfxb7bBByb3+yfG9YkYGshUATcPUamAyT6TLqhgybuSwnn0WZy3oie1KCtlbx+k3e9u7Cb/2U7JUxOGcY5MmqBLI4NhJZS3pFRdKTzKf3Yep9CYYRwNjeHFYxFAVqXyttMv3kU9zo48nc=
-  file: target/release/libPawnScraper.so
-  skip_cleanup: true
-  draft: true
   on:
-    repo: Sreyas-Sreelal/pawn-scraper
+    all_branches: true
+  provider: bintray
+  file: bintray.json
+  user: sreyas-sreelal
+  key:
+    secure: ET/uBAivlwSy0OIJlHuidwAK8vhyjFVmhNpvLyYk5sUmLuQQUWWt4ObmoixjGkO9LUaCVNewCwrR7vR7xIElbTpRm+VIT3B66VTvWbsX74nVQPInxmRXGGXBRl3Y4YBPrO6xCyLgehk6J4s0EmopXZfIu3EGfGr04LtTt5f4bnFaOAdYHourk1hUtbMlEzwPMB3UfPmq1juycrZoSe6xa8NcssdFAhTCp9xCwKKtjahNZcBBIEg+C6pwyFp79JJ5aTyol1T1H69eRD5XsFJJ4LcB40RfOi8wuUfkTEb34V5QT2cW1kV1RzJfsOtAEfml3wImp59VZlN8CidbWUk/MJEmjlc7N7QIORZxNMzaqr9nUqM8f9eOz9o69jItXavJsZa9p0Sa2p9VMc9qSeGAp272dY6QCnwRAbQ3ZIesyyK6Yqm2sA6Ys38AuZss5GT40Rs3l/iV6FcMm7/RYkiEy/FfLlvnlj1FTV1dOp0B95/YcTi5czTeC9QzdscVEJ87uaqbl9xYMu3CBVbYNw61nONBYZSOYxofqvIxaeEZdR79TjsHqYhqJCYstfPrN+SC//Vo4b4QZfqiPElQjeYo2guevUh7VM9HOLKagMsKLsSMGglFAunvaHF0j5wLxpb47xqtsdtD0qOrL/RnHSxwbsa+X+MHqpMu3bDS8ErbJCY=
+  skip_cleanup: true
