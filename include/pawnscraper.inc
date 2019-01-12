@@ -26,7 +26,7 @@ ParseHtmlDocument(document[])
 native Html:ParseHtmlDocument(document[]);
 
 /*
-ResponseParseHtml(document[])
+ResponseParseHtml(Response:id)
 	Params
 		id - Http response id returned from HttpGet
 	Returns
