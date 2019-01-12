@@ -5,8 +5,39 @@
 
 #include "../include/pawnscraper"
 
+Test:TestHeader(){
+	new Header:header = CreateHeader("Name","Bill");
+	ASSERT(DeleteHeader(header) != INVALID_HEADER);
+}
+
+Test:TestHtppGetWithHeader(){
+	new Header:header = CreateHeader(
+		"User-Agent","Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"
+	);
+	ASSERT(header != INVALID_HEADER);
+	new Response:response = HttpGet("https://sa-mp.com/",header);
+	ASSERT(response != INVALID_HTTP_RESPONSE);
+	ASSERT(DeleteHeader(header) == 1);
+}
+
+Test:TestHeaderThreaded(){
+	new Header:header = CreateHeader(
+		"User-Agent","Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"
+	);
+	ASSERT(header != INVALID_HEADER);
+	HttpGetThreaded(0,"OnHttpGetRequest","https://sa-mp.com",header);
+}
+
 Test:TestHttpGetThreaded(){
-	HttpGetThreaded(0,"OnHttpGetRequest","https://sa-mp.com");
+	HttpGetThreaded(0,"OnHttpHeaderRequest","https://sa-mp.com");
+}
+
+forward OnHttpHeaderRequest(playerid,Response:responseid);
+public OnHttpHeaderRequest(playerid,Response:responseid){
+	printf("*** Test OnHttpHeaderRequest\n");
+	ASSERT(responseid != INVALID_HTTP_RESPONSE);
+	DeleteResponse(responseid);
+	print("\nPASS!");
 }
 
 forward OnHttpGetRequest(playerid,Response:responseid);
