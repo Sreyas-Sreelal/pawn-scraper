@@ -2,19 +2,22 @@ use samp_sdk::types::Cell;
 use samp_sdk::amx::{AmxResult, AMX};
 use scraper::{Html,Selector};
 use minihttp::request::Request;
+use internals::get_string_from_args;
 
 pub trait Natives {
 	fn parse_document(&mut self,_:&AMX,document:String) -> AmxResult<Cell>;
 	fn parse_document_by_response(&mut self,_:&AMX,id:usize) -> AmxResult<Cell>;
 	fn parse_selector(&mut self,_:&AMX,string:String) -> AmxResult<Cell>;
-	fn http_request(&mut self,_:&AMX,url:String) -> AmxResult<Cell>;
-	fn http_request_threaded(&mut self,_:&AMX,playerid:usize,callback:String,url:String) -> AmxResult<Cell>;
+	fn http_request(&mut self,_:&AMX,url:String,headerid:usize) -> AmxResult<Cell>;
+	fn http_request_threaded(&mut self,_:&AMX,playerid:usize,callback:String,url:String,headerid:usize) -> AmxResult<Cell>;
 	fn get_nth_element_name(&mut self,_:&AMX,docid:usize, selectorid:usize,idx:usize,string:&mut Cell,size:usize) -> AmxResult<Cell>;
 	fn get_nth_element_text(&mut self,_:&AMX,docid:usize, selectorid:usize,idx:usize,string:&mut Cell,size:usize) -> AmxResult<Cell>;
 	fn get_nth_element_attr_value(&mut self,_:&AMX,docid:usize, selectorid:usize,idx:usize,attr:String,string:&mut Cell,size:usize) -> AmxResult<Cell>;
 	fn delete_html_instance(&mut self,_:&AMX,id:usize) -> AmxResult<Cell>;
 	fn delete_selector_instance(&mut self,_:&AMX,id:usize) -> AmxResult<Cell>;
-	fn delete_response_cache(&mut self,_:&AMX,id:usize) -> AmxResult<Cell>;	
+	fn delete_response_cache(&mut self,_:&AMX,id:usize) -> AmxResult<Cell>;
+	fn delete_header_instance(&mut self,_:&AMX,id:usize) -> AmxResult<Cell>;
+	fn create_header(&mut self,amx:&AMX,params:*mut Cell) -> AmxResult<Cell>;
 }
 
 impl Natives for super::PawnScraper{
@@ -135,14 +138,31 @@ impl Natives for super::PawnScraper{
 		}
 	}
 
-	fn http_request(&mut self,_:&AMX,url:String) -> AmxResult<Cell>{
+	fn http_request(&mut self,_:&AMX,url:String,headerid:usize) -> AmxResult<Cell>{
+		let header:Option<std::collections::HashMap<String,String>>;
+
+		if !self.header_instance.contains_key(&headerid) {
+			header = None;
+		}else {
+			header = Some(self.header_instance.get(&headerid).unwrap().clone());
+		}
 		match Request::new(&url){
 			Ok(mut http) =>{
-				match http.get().send(){
+				let mut method;
+
+				if header == None{
+					method = http.get();
+				}else {
+					method = http.headers(header.unwrap()).get();
+				}
+
+				match method.send(){
 					Ok(res) => {
 						let body = res.text();
+
 						self.response_cache.insert(self.response_context_id,body);
 						self.response_context_id += 1;
+
 						Ok(self.response_context_id as Cell -1)
 					}
 					Err(err) =>{
@@ -153,16 +173,24 @@ impl Natives for super::PawnScraper{
 			}
 			Err(err) =>{
 				log!("**[PawnScraper] Url parse error {:?}",err);
+
 				Ok(-1)
 			}
 		}
 	}
 
-	fn http_request_threaded(&mut self,_:&AMX,playerid:usize,callback:String,url:String) -> AmxResult<Cell>{
-		self.http_request_start_sender.as_ref().unwrap().send((playerid, callback, url)).unwrap();
+	fn http_request_threaded(&mut self,_:&AMX,playerid:usize,callback:String,url:String,headerid:usize) -> AmxResult<Cell>{
+		let header:Option<std::collections::HashMap<String,String>>;
+
+		if !self.header_instance.contains_key(&headerid) {
+			header = None;
+		}else {
+			header = Some(self.header_instance.get(&headerid).unwrap().clone());
+		}
+		
+		self.http_request_start_sender.as_ref().unwrap().send((playerid, callback, url,header)).unwrap();
 		Ok(1)
 	}
-
 
 	fn delete_response_cache(&mut self,_:&AMX,id:usize) -> AmxResult<Cell>{
 		if self.response_cache.remove(&id) == None{
@@ -174,17 +202,17 @@ impl Natives for super::PawnScraper{
 		}
 	}
 
-	fn delete_html_instance(&mut self,_:&AMX,id:usize) -> AmxResult<Cell>{
-		if self.html_instance.remove(&id) == None{
+	fn delete_html_instance(&mut self,_:&AMX,id:usize) -> AmxResult<Cell> {
+		if self.html_instance.remove(&id) == None { 
 			log!("**[PawnScraper] Warning trying to remove invalid html id {:?}",id);
 			Ok(0)
-		}else{
+		}else {
 			//log!("**[PawnScraper] Removed html_instance {:?}",id);
 			Ok(1)
 		}
 	}
 
-	fn delete_selector_instance(&mut self,_:&AMX,id:usize) -> AmxResult<Cell>{
+	fn delete_selector_instance(&mut self,_:&AMX,id:usize) -> AmxResult<Cell> {
 		if self.selectors.remove(&id) == None{
 			log!("**[PawnScraper] Warning trying to remove invalid selector id {:?}",id);
 			Ok(0)
@@ -192,7 +220,59 @@ impl Natives for super::PawnScraper{
 			//log!("**[PawnScraper] Removed selector_instance {:?}",id);
 			Ok(1)
 		}
-	}	
+	}
+
+	fn delete_header_instance(&mut self,_:&AMX,id:usize) -> AmxResult<Cell> {
+		if self.header_instance.remove(&id) == None{
+			log!("**[PawnScraper] Warning trying to remove invalid header object id {:?}",id);
+			Ok(0)
+		}else{
+			//log!("**[PawnScraper] Removed selector_instance {:?}",id);
+			Ok(1)
+		}
+	}
+	
+	fn create_header(&mut self,amx:&AMX,params:*mut Cell) -> AmxResult<Cell>{
+		let params_count = args_count!(params);
+		let mut headers:std::collections::HashMap<String,String> = std::collections::HashMap::new();
+		let mut isok:bool = true;
+		let mut key:Option<String>;
+		let mut value:Option<String>;
+
+		if params_count % 2 == 0 && params_count != 0 {
+
+			for arg in (1..=params_count).step_by(2) { 
+				key = get_string_from_args(amx,params,arg);
+				if key == None { 
+					isok = false;
+					break;
+				}
+
+				value = get_string_from_args(amx,params,arg+1);
+				if value == None {
+					isok = false;
+					break;
+				}
+			
+				headers.insert(key.unwrap(),value.unwrap());
+			}
+
+			if !isok{
+				Ok(-1)
+			} else{
+				self.header_instance.insert(self.header_context_id,headers);
+				self.header_context_id += 1;
+				Ok(self.header_context_id as Cell -1)
+			}
+
+		}else{
+			log!("**[PawnScraper] Error Invalid number of parameters passed to function CreateHeader");
+			Ok(-1)
+		}
+	}
+	
 }
+
+
 
 

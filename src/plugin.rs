@@ -4,35 +4,39 @@ use samp_sdk::amx::AMX;
 use scraper::{Html,Selector};
 use natives::Natives;
 use std::sync::mpsc::{Sender,Receiver};
-use internals::Internal;
+use internals::listen_for_http_calls;
 
 define_native!(parse_document,document:String);
 define_native!(parse_document_by_response,id:usize);
 define_native!(parse_selector,string:String);
-define_native!(http_request,url:String);
-define_native!(http_request_threaded,playerid:usize,callback:String,url:String);
+define_native!(http_request,url:String,headerid:usize);
+define_native!(http_request_threaded,playerid:usize,callback:String,url:String,headerid:usize);
 define_native!(get_nth_element_name,docid:usize,selectorid:usize,idx:usize,string:ref Cell,size:usize);
 define_native!(get_nth_element_text,docid:usize,selectorid:usize,idx:usize,string:ref Cell,size:usize);
 define_native!(get_nth_element_attr_value,docid:usize, selectorid:usize,idx:usize,attr:String,string:ref Cell,size:usize);
 define_native!(delete_response_cache,id:usize);
 define_native!(delete_html_instance,id:usize);
 define_native!(delete_selector_instance,id:usize);
+define_native!(delete_header_instance,id:usize);
+define_native!(create_header as raw);
 
 pub struct PawnScraper{
 	pub html_instance: std::collections::HashMap<usize,Html>,
 	pub selectors: std::collections::HashMap<usize,Selector>,
 	pub response_cache: std::collections::HashMap<usize,String>,
+	pub header_instance: std::collections::HashMap<usize,std::collections::HashMap<String,String>>,
 	pub html_context_id: usize,
 	pub selector_context_id: usize,
 	pub response_context_id: usize,
-	pub http_request_start_sender: Option<Sender<(usize, String, String)>>,
+	pub header_context_id: usize,
+	pub http_request_start_sender: Option<Sender<(usize, String, String,Option<std::collections::HashMap<String,String>>)>>,
 	pub http_request_complete_receiver: Option<Receiver<(usize, String, String,bool)>>,
 	pub amx_list :Vec<usize>,
 }
 
 impl PawnScraper{
 	pub fn load(&mut self) -> bool {
-		Internal::listen_for_http_calls(self);
+		listen_for_http_calls(self);
 		
 		log!("
    ###############################################################
@@ -65,7 +69,9 @@ impl PawnScraper{
 			"GetNthElementAttrVal" => get_nth_element_attr_value,
 			"DeleteHtml" => delete_html_instance,
 			"DeleteSelector" => delete_selector_instance,
-			"DeleteResponse" => delete_response_cache
+			"DeleteResponse" => delete_response_cache,
+			"DeleteHeader" => delete_header_instance,
+			"CreateHeader" => create_header
 		};
 
 		match amx.register(&natives) {
@@ -120,9 +126,11 @@ impl Default for PawnScraper{
 			html_instance: std::collections::HashMap::new(),
 			selectors: std::collections::HashMap::new(),
 			response_cache: std::collections::HashMap::new(),
+			header_instance:std::collections::HashMap::new(),
 			html_context_id: 0,
 			selector_context_id: 0,
 			response_context_id: 0,
+			header_context_id: 0,
 			http_request_start_sender:None,
 			http_request_complete_receiver:None,
 			amx_list:Vec::new(),
