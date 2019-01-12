@@ -1,7 +1,7 @@
 {
     "package": {
       "name": "builds",
-      "repo": "samp-bcrypt",
+      "repo": "pawn-scraper",
       "subject": "sreyas-sreelal"
     },
     "version": {
@@ -10,7 +10,7 @@
     "files": [
       {
         "includePattern": "test/plugins/PawnScraper.so",
-        "uploadPattern": "$1",
+        "uploadPattern": "PawnScraper.so",
         "matrixParams": {
           "override": 1
         }
