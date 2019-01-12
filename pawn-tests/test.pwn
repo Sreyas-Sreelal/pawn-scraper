@@ -7,7 +7,14 @@
 
 Test:TestHeader(){
 	new Header:header = CreateHeader("Name","Bill");
-	ASSERT(DeleteHeader(header) != INVALID_HEADER);
+	ASSERT(header != INVALID_HEADER);
+	ASSERT(DeleteHeader(header) == 1);
+}
+
+Test:TestInvalidHeader(){
+	new Header:header = CreateHeader("Name","Bill","Address");
+	ASSERT(header == INVALID_HEADER);
+	ASSERT(DeleteHeader(header) == 0);
 }
 
 Test:TestHtppGetWithHeader(){
@@ -26,6 +33,7 @@ Test:TestHeaderThreaded(){
 	);
 	ASSERT(header != INVALID_HEADER);
 	HttpGetThreaded(0,"OnHttpGetRequest","https://sa-mp.com",header);
+	ASSERT(DeleteHeader(header) == 1);
 }
 
 Test:TestHttpGetThreaded(){
