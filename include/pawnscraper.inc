@@ -12,6 +12,9 @@
 #define INVALID_ATTRIBUTE (-2)
 #define SCRAPER_ERROR (-1)
 #define INVALID_HTTP_RESPONSE (Response:-1)
+#define INVALID_HEADER (Header:-1)
+
+
 /*
 ParseHtmlDocument(document[])
 	Params
@@ -36,11 +39,12 @@ native Html:ResponseParseHtml(Response:id);
 HttpGet(url[])
 	Params
 		url[] - Url of a website
+		header - id of header object created using CreateHeader
 	Returns
 		 - Response id if successful
 		 - if failed to INVALID_HTTP_RESPONSE is returned
 */
-native Response:HttpGet(url[]);
+native Response:HttpGet(url[],Header:headerid=INVALID_HEADER);
 
 /*
 HttpGetThreaded(playerid,callback[],url[])
@@ -48,8 +52,9 @@ HttpGetThreaded(playerid,callback[],url[])
 		playerid - id of the player
 		callback[] - name of the callback function to handle the response.
 		url[] - Url of a website
+		header - id of header object created using CreateHeader
 */
-native HttpGetThreaded(playerid,callback[],url[]);
+native HttpGetThreaded(playerid,callback[],url[],Header:headerid=INVALID_HEADER);
 
 /*
 ParseSelector(string[])
@@ -60,6 +65,13 @@ ParseSelector(string[])
 		 - if failed to INVALID_SELECTOR is returned
 */
 native Selector:ParseSelector(string[]);
+
+/*
+CreateHeader(...)
+	Params
+		key value pairs
+*/
+native Header:CreateHeader(...);
 
 /*
 GetNthElementName(Html:docid,Selector:selectorid,idx,string[],size = sizeof(string))
@@ -104,8 +116,6 @@ GetNthElementAttrVal(Html:docid,Selector:selectorid,idx,attribute[],string[],siz
 */
 native GetNthElementAttrVal(Html:docid,Selector:selectorid,idx,attribute[],string[],size = sizeof(string));
 
-//Internal functions that deletes created objects from plugin memory when they get out of scope 
-
 /*
 DeleteHtml(Html:id)
 	Params
@@ -127,3 +137,9 @@ DeleteResponse(Html:id)
 */
 native DeleteResponse(Response:id);
 
+/*
+DeleteHeader(Header:id)
+	Params
+		id - header instance to be deleted
+*/
+native DeleteHeader(Header:id);
