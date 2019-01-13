@@ -38,4 +38,5 @@ deploy:
     repo: pawn-scraper
     package: builds
     publish: true
+    version: latest
     override: true
