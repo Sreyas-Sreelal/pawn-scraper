@@ -7,6 +7,7 @@
 #endif
 #define _pawnscraper_included
 
+#define PAWN_SCRAPER_VERSION 20
 #define INVALID_HTML_DOC (Html:-1)
 #define INVALID_SELECTOR (Selector:-1)
 #define INVALID_ATTRIBUTE (-2)
@@ -14,6 +15,8 @@
 #define INVALID_HTTP_RESPONSE (Response:-1)
 #define INVALID_HEADER (Header:-1)
 
+public _pawnscraper_version = PAWN_SCRAPER_VERSION;
+#pragma unused _pawnscraper_version
 
 /*
 ParseHtmlDocument(document[])

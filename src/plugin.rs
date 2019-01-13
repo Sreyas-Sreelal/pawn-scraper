@@ -1,6 +1,6 @@
 use samp_sdk::consts::*;
 use samp_sdk::types::Cell;
-use samp_sdk::amx::AMX;
+use samp_sdk::amx::{AMX,AmxResult};
 use scraper::{Html,Selector};
 use natives::Natives;
 use std::sync::mpsc::{Sender,Receiver};
@@ -21,6 +21,7 @@ define_native!(delete_header_instance,id:usize);
 define_native!(create_header as raw);
 
 pub struct PawnScraper{
+	plugin_version: i32,
 	pub html_instance: std::collections::HashMap<usize,Html>,
 	pub selectors: std::collections::HashMap<usize,Selector>,
 	pub response_cache: std::collections::HashMap<usize,String>,
@@ -41,7 +42,7 @@ impl PawnScraper{
 		log!("
    ###############################################################
    #                      PawnScraper                            #
-   #                        V0.1.1 Loaded!!                      #
+   #                        V0.2.0 Loaded!!                      #
    #   Found any bugs? Report it here:                           #
    #       https://github.com/Sreyas-Sreelal/pawn-scraper/issues #
    #                                                             #
@@ -52,7 +53,7 @@ impl PawnScraper{
 		
 
 	pub fn unload(&self) {
-		log!("PawnScraper V0.1.0 Unloaded!!");
+		log!("PawnScraper V0.2.0 Unloaded!!");
 	}
 
 	pub fn amx_load(&mut self, amx: &mut AMX) -> Cell {
@@ -78,7 +79,19 @@ impl PawnScraper{
 			Ok(_) => log!("**[PawnScraper] Natives are successfully loaded"),
 			Err(err) => log!("**[PawnScraper] There is an error loading natives {:?}", err),
 		}
+		
+		let get_version:AmxResult<&mut i32> = amx.find_pubvar("_pawnscraper_version");
 
+		match get_version{
+			Ok(version) =>{
+				if *version != self.plugin_version{
+					log!("**[PawnScraper] Warning plugin and include version doesnot match : Include {:?} Plugin {:?}",version,self.plugin_version);
+				}
+			},
+			Err(err)=>{
+				log!("**[PawnScraper] Failed to retrive include version Reasone:{:?}\n You might want to update include ", err)
+			}
+		}
 		AMX_ERR_NONE
 	}
 
@@ -123,6 +136,7 @@ impl PawnScraper{
 impl Default for PawnScraper{
 	fn default() -> Self {
 		PawnScraper {
+			plugin_version: 20,
 			html_instance: std::collections::HashMap::new(),
 			selectors: std::collections::HashMap::new(),
 			response_cache: std::collections::HashMap::new(),
