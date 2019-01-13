@@ -65,7 +65,7 @@ Thanks to [Southclaws](https://www.github.com/southclaws),plugin installation is
 		DeleteHtml(doc);
 		```
 
-* ### HttpGet(url[])
+* ### HttpGet(url[],Header:headerid=INVALID_HEADER)
 	* **Params**
 		* `url[]` - Url of a website
 		* `header` - id of header object created using CreateHeader
@@ -79,7 +79,7 @@ Thanks to [Southclaws](https://www.github.com/southclaws),plugin installation is
         DeleteResponse(response);
         ```
 
-* ### HttpGetThreaded(playerid,callback[],url[])
+* ### HttpGetThreaded(playerid,callback[],url[],Header:headerid=INVALID_HEADER)
 	* **Params**
 		* `playerid` - id of the player
 		* `callback[]` - name of the callback function to handle the response.
