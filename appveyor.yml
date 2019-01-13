@@ -9,11 +9,34 @@ install:
   - set PATH=%PATH%;C:\Users\appveyor\.cargo\bin
   - rustc -Vv
   - cargo -V
+  - set-executionpolicy remotesigned -scope currentuser
+  - iex (new-object net.webclient).downloadstring('https://get.scoop.sh')
+  - scoop bucket add southclaws https://github.com/Southclaws/scoops.git
+  - scoop install sampctl
 
 matrix:
   fast_finish: true
 
-build: false
+before_build:
+  - make setup
+
+build_script:
+  - make release
 
 test_script:
-  - cargo build --verbose
+  - make run
+
+artifacts:
+  - path: test/plugins/PawnScraper.dll
+    name: PawnScraper
+
+deploy:
+  - provider: BinTray
+    username: sreyas-sreelal
+    api_key:
+      secure: avSVuY8Q8nSYesj3ce2v8cM6+aTSivkTzGozcCBMpJr+I0Td73+fVHTp6dAHcGw6
+    subject: sreyas-sreelal
+    repo: pawn-scraper
+    package: builds
+    publish: true
+    override: true
