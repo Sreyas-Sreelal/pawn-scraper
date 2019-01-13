@@ -9,7 +9,6 @@ install:
   - set PATH=%PATH%;C:\Users\appveyor\.cargo\bin
   - rustc -Vv
   - cargo -V
-  - set-executionpolicy remotesigned -scope currentuser
   - iex (new-object net.webclient).downloadstring('https://get.scoop.sh')
   - scoop bucket add southclaws https://github.com/Southclaws/scoops.git
   - scoop install sampctl
