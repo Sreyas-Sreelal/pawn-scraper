@@ -12,7 +12,7 @@ install:
   - ps: iex (new-object net.webclient).downloadstring('https://get.scoop.sh')
   - scoop bucket add southclaws https://github.com/Southclaws/scoops.git
   - scoop install sampctl
-
+  - appveyor-retry choco install make
 matrix:
   fast_finish: true
 
