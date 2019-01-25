@@ -3,6 +3,7 @@ use minihttp::request::Request;
 use samp_sdk::amx::{AmxResult, AMX};
 use samp_sdk::types::Cell;
 use scraper::{Html, Selector};
+use std::collections::HashMap;
 
 impl super::PawnScraper {
     pub fn parse_document(&mut self, _: &AMX, document: String) -> AmxResult<Cell> {
@@ -160,7 +161,7 @@ impl super::PawnScraper {
     }
 
     pub fn http_request(&mut self, _: &AMX, url: String, headerid: usize) -> AmxResult<Cell> {
-        let header: Option<std::collections::HashMap<String, String>>;
+        let header: Option<HashMap<String, String>>;
 
         if !self.header_instance.contains_key(&headerid) {
             header = None;
@@ -208,7 +209,7 @@ impl super::PawnScraper {
         url: String,
         headerid: usize,
     ) -> AmxResult<Cell> {
-        let header: Option<std::collections::HashMap<String, String>>;
+        let header: Option<HashMap<String, String>>;
 
         if !self.header_instance.contains_key(&headerid) {
             header = None;
@@ -278,8 +279,7 @@ impl super::PawnScraper {
 
     pub fn create_header(&mut self, amx: &AMX, params: *mut Cell) -> AmxResult<Cell> {
         let params_count = args_count!(params);
-        let mut headers: std::collections::HashMap<String, String> =
-            std::collections::HashMap::new();
+        let mut headers: HashMap<String, String> = HashMap::new();
         let mut isok: bool = true;
         let mut key: Option<String>;
         let mut value: Option<String>;
