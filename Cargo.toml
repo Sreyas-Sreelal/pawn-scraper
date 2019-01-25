@@ -8,6 +8,6 @@ name = "PawnScraper"
 crate-type = ["cdylib"]
 
 [dependencies]
-samp-sdk = "0.8.4"
+samp-sdk = {git = "https://github.com/ZOTTCE/samp-sdk"}
 scraper  = "0.8.1"
 minihttp = {git = "https://github.com/Sreyas-Sreelal/minihttp"}
