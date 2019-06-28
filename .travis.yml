@@ -1,5 +1,7 @@
 language: rust
 dist: trusty
+cache: cargo
+
 matrix:
   fast_finish: true
   include:
