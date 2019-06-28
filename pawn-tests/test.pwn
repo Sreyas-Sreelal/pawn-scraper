@@ -1,7 +1,7 @@
 #include<a_samp>
 
 #define RUN_TESTS
-#include <YSI\y_testing>
+#include <YSI_Core\y_testing>
 
 #include "../include/pawnscraper"
 
@@ -32,12 +32,12 @@ Test:TestHeaderThreaded(){
 		"User-Agent","Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"
 	);
 	ASSERT(header != INVALID_HEADER);
-	HttpGetThreaded(0,"OnHttpGetRequest","https://sa-mp.com",header);
+	HttpGetThreaded(0,"OnHttpGetRequest","https://open.mp",header);
 	ASSERT(DeleteHeader(header) == 1);
 }
 
 Test:TestHttpGetThreaded(){
-	HttpGetThreaded(0,"OnHttpHeaderRequest","https://sa-mp.com");
+	HttpGetThreaded(0,"OnHttpHeaderRequest","https://open.mp");
 }
 
 forward OnHttpHeaderRequest(playerid,Response:responseid);

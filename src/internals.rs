@@ -1,6 +1,5 @@
+use log::error;
 use minihttp::request::Request;
-use samp_sdk::amx::AMX;
-use samp_sdk::types::Cell;
 use std::sync::mpsc::channel;
 
 pub fn listen_for_http_calls(plugin: &mut super::PawnScraper) {
@@ -14,7 +13,7 @@ pub fn listen_for_http_calls(plugin: &mut super::PawnScraper) {
         for (playerid, callback, url, header) in http_request_start_receiver.iter() {
             match Request::new(&url) {
                 Ok(mut http) => {
-                    let mut method;
+                    let method;
 
                     if header == None {
                         method = http.get();
@@ -30,7 +29,7 @@ pub fn listen_for_http_calls(plugin: &mut super::PawnScraper) {
                                 .unwrap();
                         }
                         Err(err) => {
-                            log!("**[PawnScraper] Http error {:?}", err);
+                            error!("Http error {:?}", err);
                             http_request_complete_sender
                                 .send((playerid, callback, String::from(""), false))
                                 .unwrap();
@@ -47,17 +46,4 @@ pub fn listen_for_http_calls(plugin: &mut super::PawnScraper) {
             }
         }
     });
-}
-
-pub fn get_string_from_args(amx: &AMX, params: *mut Cell, offset: usize) -> Option<String> {
-    match get_string!(amx, params.offset(offset as isize)) {
-        Ok(data) => Some(data),
-        Err(err) => {
-            log!(
-                "**[PawnScraper] Error Invalid arguement type is passed {:?} ",
-                err
-            );
-            None
-        }
-    }
 }

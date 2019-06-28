@@ -9,7 +9,7 @@
     },
     "files": [
       {
-        "includePattern": "test/plugins/PawnScraper.so",
+        "includePattern": "plugins/PawnScraper.so",
         "uploadPattern": "PawnScraper.so",
         "matrixParams": {
           "override": 1

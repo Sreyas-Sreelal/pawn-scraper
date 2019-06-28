@@ -2,12 +2,16 @@
 name = "PawnScraper"
 version = "0.1.1"
 authors = ["Sreyas <sreyassreelal@gmail.com>"]
+edition = "2018"
 
 [lib]
 name = "PawnScraper"
 crate-type = ["cdylib"]
 
 [dependencies]
-samp-sdk = {git = "https://github.com/ZOTTCE/samp-sdk"}
+samp = {git="https://github.com/ZOTTCE/samp-rs/"}
+log = "0.4.6"
+fern = "0.5.7"
 scraper  = "0.8.1"
 minihttp = {git = "https://github.com/Sreyas-Sreelal/minihttp"}
+encoding = "0.2.33"
