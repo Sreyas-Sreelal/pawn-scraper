@@ -19,14 +19,14 @@ public _pawnscraper_version = PAWN_SCRAPER_VERSION;
 #pragma unused _pawnscraper_version
 
 /*
-ParseHtmlDocument(document[])
+ParseHtmlDocument(const document[])
 	Params
 		document[] - string of html document
 	Returns
 		 - Html document instance id
 		 - if failed to parse document INVALID_HTML_DOC is returned
 */
-native Html:ParseHtmlDocument(document[]);
+native Html:ParseHtmlDocument(const document[]);
 
 /*
 ResponseParseHtml(Response:id)
@@ -39,7 +39,7 @@ ResponseParseHtml(Response:id)
 native Html:ResponseParseHtml(Response:id);
 
 /*
-HttpGet(url[],Header:headerid=INVALID_HEADER)
+HttpGet(const url[],Header:headerid=INVALID_HEADER)
 	Params
 		url[] - Url of a website
 		header - id of header object created using CreateHeader
@@ -50,7 +50,7 @@ HttpGet(url[],Header:headerid=INVALID_HEADER)
 native Response:HttpGet(const url[],Header:headerid=INVALID_HEADER);
 
 /*
-HttpGetThreaded(playerid,callback[],url[],Header:headerid=INVALID_HEADER)
+HttpGetThreaded(playerid,const callback[],const url[],Header:headerid=INVALID_HEADER)
 	Params
 		playerid - id of the player
 		callback[] - name of the callback function to handle the response.
@@ -60,7 +60,7 @@ HttpGetThreaded(playerid,callback[],url[],Header:headerid=INVALID_HEADER)
 native HttpGetThreaded(playerid,const callback[],const url[],Header:headerid=INVALID_HEADER);
 
 /*
-ParseSelector(string[])
+ParseSelector(const string[])
 	Params
 		string[] - CSS selector 
 	Returns
@@ -105,7 +105,7 @@ GetNthElementText(Html:docid,Selector:selectorid,idx,string[],size = sizeof(stri
 native GetNthElementText(Html:docid,Selector:selectorid,idx,string[],size = sizeof(string));
 
 /*
-GetNthElementAttrVal(Html:docid,Selector:selectorid,idx,attribute[],string[],size = sizeof(string))
+GetNthElementAttrVal(Html:docid,Selector:selectorid,idx,const attribute[],string[],size = sizeof(string))
 	Params
 		docid - Html instance id
 		selectorid - CSS selector instance id
