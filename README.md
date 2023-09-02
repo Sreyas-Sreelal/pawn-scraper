@@ -1,8 +1,7 @@
 # pawn-scraper
-[![Build Status](https://travis-ci.org/Sreyas-Sreelal/pawn-scraper.svg?branch=master)](https://travis-ci.org/Sreyas-Sreelal/pawn-scraper)
-[![Build status](https://ci.appveyor.com/api/projects/status/5rq55kukvy8xymly?svg=true)](https://ci.appveyor.com/project/Sreyas-Sreelal/pawn-scraper)
-[![sampctl-supported](https://shields.southcla.ws/badge/sampctl-PawnScraper-2f2f2f.svg)](https://github.com/Sreyas-Sreelal/pawn-scraper)
-[![GitHub issues](https://img.shields.io/github/issues/Sreyas-Sreelal/pawn-scraper.svg)](https://github.com/Sreyas-Sreelal/pawn-scraper/issues) [![GitHub pull requests](https://img.shields.io/github/issues-pr-raw/sreyas-sreelal/pawn-scraper.svg)](https://github.com/Sreyas-Sreelal/pawn-scraper/pulls) [![GitHub pull license](https://img.shields.io/github/license/sreyas-sreelal/pawn-scraper.svg)](LICENSE) 
+![Build](https://github.com/sreyas-sreelal/pawn-scraper/actions/workflows/rust.yml/badge.svg)
+[![sampctl](https://img.shields.io/badge/sampctl-supported-2f2f2f.svg)](https://github.com/Sreyas-Sreelal/pawn-scraper)
+[![GitHub issues](https://img.shields.io/github/issues/Sreyas-Sreelal/pawn-scraper.svg)](https://github.com/Sreyas-Sreelal/pawn-scraper/issues) [![GitHub pull requests](https://img.shields.io/github/issues-pr-raw/sreyas-sreelal/pawn-scraper.svg)](https://github.com/Sreyas-Sreelal/pawn-scraper/pulls) [![GitHub pull license](https://img.shields.io/github/license/sreyas-sreelal/pawn-scraper.svg)](LICENSE)
 
 A powerful scraper plugin that provides interface for utlising html_parsers and css selectors in pawn.
 ## Installing 
