@@ -11,7 +11,7 @@ use std::collections::HashMap;
 
 initialize_plugin!(
     natives: [
-    	PawnScraper::parse_document,
+        PawnScraper::parse_document,
         PawnScraper::parse_document_by_response,
         PawnScraper::parse_selector,
         PawnScraper::http_request,
@@ -27,7 +27,7 @@ initialize_plugin!(
     ],
     {
         samp::plugin::enable_process_tick();
-        
+
         let samp_logger = samp::plugin::logger()
             .level(log::LevelFilter::Info);
 

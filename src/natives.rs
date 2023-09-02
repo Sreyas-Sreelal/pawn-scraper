@@ -20,16 +20,13 @@ impl super::PawnScraper {
     pub fn parse_document_by_response(&mut self, _: &Amx, id: usize) -> AmxResult<i32> {
         if id > self.response_context_id {
             Ok(-1)
+        } else if let Some(response_data) = self.response_cache.get(&id) {
+            let parsed_data = Html::parse_document(response_data);
+            self.html_instance.insert(self.html_context_id, parsed_data);
+            self.html_context_id += 1;
+            Ok(self.html_context_id as i32 - 1)
         } else {
-            let response_data = self.response_cache.get(&id);
-            if response_data == None {
-                Ok(-1)
-            } else {
-                let parsed_data = Html::parse_document(&response_data.unwrap());
-                self.html_instance.insert(self.html_context_id, parsed_data);
-                self.html_context_id += 1;
-                Ok(self.html_context_id as i32 - 1)
-            }
+            Ok(-1)
         }
     }
 
@@ -67,11 +64,8 @@ impl super::PawnScraper {
         } else {
             let html = &self.html_instance.get(&docid).unwrap();
             let selector = &self.selectors.get(&selectorid).unwrap();
-            let nth_element = html.select(selector).nth(idx);
-            if nth_element == None {
-                Ok(0)
-            } else {
-                let element_text_iter = nth_element.unwrap().text();
+            if let Some(nth_element) = html.select(selector).nth(idx) {
+                let element_text_iter = nth_element.text();
                 let mut full_text: String = String::new();
                 for i in element_text_iter {
                     full_text += i;
@@ -87,6 +81,8 @@ impl super::PawnScraper {
                         Ok(0)
                     }
                 }
+            } else {
+                Ok(0)
             }
         }
     }
@@ -110,12 +106,8 @@ impl super::PawnScraper {
         } else {
             let html = &self.html_instance.get(&docid).unwrap();
             let selector = &self.selectors.get(&selectorid).unwrap();
-            let nth_element = html.select(selector).nth(idx);
-
-            if nth_element == None {
-                Ok(0)
-            } else {
-                let element_name = nth_element.unwrap().value().name();
+            if let Some(nth_element) = html.select(selector).nth(idx) {
+                let element_name = nth_element.value().name();
                 match encode_replace(element_name) {
                     Ok(name_encoded) => {
                         let mut dest = string.into_sized_buffer(size);
@@ -125,12 +117,14 @@ impl super::PawnScraper {
                         error!("Encoding error {:?}", err);
                     }
                 }
-
                 Ok(1)
+            } else {
+                Ok(0)
             }
         }
     }
 
+    #[allow(clippy::too_many_arguments)]
     #[native(name = "GetNthElementAttrVal")]
     pub fn get_nth_element_attr_value(
         &mut self,
@@ -151,15 +145,9 @@ impl super::PawnScraper {
         } else {
             let html = &self.html_instance.get(&docid).unwrap();
             let selector = &self.selectors.get(&selectorid).unwrap();
-            let nth_element = html.select(selector).nth(idx);
-            if nth_element == None {
-                Ok(0)
-            } else {
-                let attr_value = nth_element.unwrap().value().attr(&attr.to_string());
-                if attr_value == None {
-                    Ok(-2)
-                } else {
-                    match encode_replace(attr_value.unwrap()) {
+            if let Some(nth_element) = html.select(selector).nth(idx) {
+                if let Some(attr_value) = nth_element.value().attr(&attr.to_string()) {
+                    match encode_replace(attr_value) {
                         Ok(attr_encoded) => {
                             let mut dest = string.into_sized_buffer(size);
                             let _ = samp::cell::string::put_in_buffer(&mut dest, &attr_encoded);
@@ -170,29 +158,29 @@ impl super::PawnScraper {
                             Ok(0)
                         }
                     }
+                } else {
+                    Ok(-2)
                 }
+            } else {
+                Ok(0)
             }
         }
     }
 
     #[native(name = "HttpGet")]
     pub fn http_request(&mut self, _: &Amx, url: AmxString, headerid: usize) -> AmxResult<i32> {
-        let header: Option<HashMap<String, String>>;
-
-        if !self.header_instance.contains_key(&headerid) {
-            header = None;
+        let header = if !self.header_instance.contains_key(&headerid) {
+            None
         } else {
-            header = Some(self.header_instance.get(&headerid).unwrap().clone());
-        }
+            Some(self.header_instance.get(&headerid).unwrap().clone())
+        };
         match Request::new(&url.to_string()) {
             Ok(mut http) => {
-                let method;
-
-                if header == None {
-                    method = http.get();
+                let method = if let Some(header) = header {
+                    http.headers(header).get()
                 } else {
-                    method = http.headers(header.unwrap()).get();
-                }
+                    http.get()
+                };
 
                 match method.send() {
                     Ok(res) => {
@@ -225,13 +213,11 @@ impl super::PawnScraper {
         url: AmxString,
         headerid: usize,
     ) -> AmxResult<i32> {
-        let header: Option<HashMap<String, String>>;
-
-        if !self.header_instance.contains_key(&headerid) {
-            header = None;
+        let header = if !self.header_instance.contains_key(&headerid) {
+            None
         } else {
-            header = Some(self.header_instance.get(&headerid).unwrap().clone());
-        }
+            Some(self.header_instance.get(&headerid).unwrap().clone())
+        };
 
         self.http_request_start_sender
             .as_ref()
@@ -243,7 +229,7 @@ impl super::PawnScraper {
 
     #[native(name = "DeleteResponse")]
     pub fn delete_response_cache(&mut self, _: &Amx, id: usize) -> AmxResult<i32> {
-        if self.response_cache.remove(&id) == None {
+        if self.response_cache.remove(&id).is_none() {
             warn!("trying to remove invalid response id {:?}", id);
             Ok(0)
         } else {
@@ -254,7 +240,7 @@ impl super::PawnScraper {
 
     #[native(name = "DeleteHtml")]
     pub fn delete_html_instance(&mut self, _: &Amx, id: usize) -> AmxResult<i32> {
-        if self.html_instance.remove(&id) == None {
+        if self.html_instance.remove(&id).is_none() {
             warn!("Warning trying to remove invalid html id {:?}", id);
             Ok(0)
         } else {
@@ -265,7 +251,7 @@ impl super::PawnScraper {
 
     #[native(name = "DeleteSelector")]
     pub fn delete_selector_instance(&mut self, _: &Amx, id: usize) -> AmxResult<i32> {
-        if self.selectors.remove(&id) == None {
+        if self.selectors.remove(&id).is_none() {
             warn!("Warning trying to remove invalid selector id {:?}", id);
             Ok(0)
         } else {
@@ -276,7 +262,7 @@ impl super::PawnScraper {
 
     #[native(name = "DeleteHeader")]
     pub fn delete_header_instance(&mut self, _: &Amx, id: usize) -> AmxResult<i32> {
-        if self.header_instance.remove(&id) == None {
+        if self.header_instance.remove(&id).is_none() {
             warn!("Warning trying to remove invalid header object id {:?}", id);
             Ok(0)
         } else {

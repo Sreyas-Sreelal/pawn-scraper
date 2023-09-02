@@ -7,6 +7,10 @@ use scraper::{Html, Selector};
 use std::collections::HashMap;
 use std::sync::mpsc::{Receiver, Sender};
 
+pub type HttpRequestSender =
+    Option<Sender<(usize, String, String, Option<HashMap<String, String>>)>>;
+pub type HttpRequestReceiver = Option<Receiver<(usize, String, String, bool)>>;
+
 pub struct PawnScraper {
     pub plugin_version: i32,
     pub html_instance: HashMap<usize, Html>,
@@ -17,9 +21,8 @@ pub struct PawnScraper {
     pub selector_context_id: usize,
     pub response_context_id: usize,
     pub header_context_id: usize,
-    pub http_request_start_sender:
-        Option<Sender<(usize, String, String, Option<HashMap<String, String>>)>>,
-    pub http_request_complete_receiver: Option<Receiver<(usize, String, String, bool)>>,
+    pub http_request_start_sender: HttpRequestSender,
+    pub http_request_complete_receiver: HttpRequestReceiver,
     pub amx_list: Vec<AmxIdent>,
 }
 
@@ -31,7 +34,7 @@ impl SampPlugin for PawnScraper {
             "
    ###############################################################
    #                      PawnScraper                            #
-   #                        V0.2.1 Loaded!!                      #
+   #                      V0.2.1 Loaded!!                        #
    #   Found any bugs? Report it here:                           #
    #       https://github.com/Sreyas-Sreelal/pawn-scraper/issues #
    #                                                             #
@@ -48,16 +51,16 @@ impl SampPlugin for PawnScraper {
         self.amx_list.push(amx.ident());
         let get_version = amx.find_pubvar::<i32>("_pawnscraper_version");
 
-        match get_version{
-			Ok(version) =>{
-				if *version != self.plugin_version{
-					warn!("Warning plugin and include version doesnot match : Include {:?} Plugin {:?}",*version,self.plugin_version);
-				}
-			},
-			Err(err)=>{
-				error!("Failed to retrive include version Reasone:{:?}\n You might want to update include ", err)
-			}
-		}
+        match get_version {
+            Ok(version) => {
+                if *version != self.plugin_version {
+                    warn!("Warning plugin and include version doesnot match : Include {:?} Plugin {:?}",*version,self.plugin_version);
+                }
+            }
+            Err(err) => {
+                error!("Failed to retrive include version Reasone:{:?}\n You might want to update include ", err)
+            }
+        }
     }
 
     fn on_amx_unload(&mut self, amx: &Amx) {

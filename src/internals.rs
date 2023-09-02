@@ -13,13 +13,11 @@ pub fn listen_for_http_calls(plugin: &mut super::PawnScraper) {
         for (playerid, callback, url, header) in http_request_start_receiver.iter() {
             match Request::new(&url) {
                 Ok(mut http) => {
-                    let method;
-
-                    if header == None {
-                        method = http.get();
+                    let method = if let Some(header) = header {
+                        http.headers(header).get()
                     } else {
-                        method = http.headers(header.unwrap()).get();
-                    }
+                        http.get()
+                    };
 
                     match method.send() {
                         Ok(res) => {
