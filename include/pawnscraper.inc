@@ -47,7 +47,7 @@ HttpGet(url[],Header:headerid=INVALID_HEADER)
 		 - Response id if successful
 		 - if failed to INVALID_HTTP_RESPONSE is returned
 */
-native Response:HttpGet(url[],Header:headerid=INVALID_HEADER);
+native Response:HttpGet(const url[],Header:headerid=INVALID_HEADER);
 
 /*
 HttpGetThreaded(playerid,callback[],url[],Header:headerid=INVALID_HEADER)
@@ -57,7 +57,7 @@ HttpGetThreaded(playerid,callback[],url[],Header:headerid=INVALID_HEADER)
 		url[] - Url of a website
 		header - id of header object created using CreateHeader
 */
-native HttpGetThreaded(playerid,callback[],url[],Header:headerid=INVALID_HEADER);
+native HttpGetThreaded(playerid,const callback[],const url[],Header:headerid=INVALID_HEADER);
 
 /*
 ParseSelector(string[])
@@ -67,7 +67,7 @@ ParseSelector(string[])
 		 - Selector instance id if successful
 		 - if failed to INVALID_SELECTOR is returned
 */
-native Selector:ParseSelector(string[]);
+native Selector:ParseSelector(const string[]);
 
 /*
 CreateHeader(...)
@@ -117,7 +117,7 @@ GetNthElementAttrVal(Html:docid,Selector:selectorid,idx,attribute[],string[],siz
 		- 1 if successful
 		- 0 if failed
 */
-native GetNthElementAttrVal(Html:docid,Selector:selectorid,idx,attribute[],string[],size = sizeof(string));
+native GetNthElementAttrVal(Html:docid,Selector:selectorid,idx,const attribute[],string[],size = sizeof(string));
 
 /*
 DeleteHtml(Html:id)
