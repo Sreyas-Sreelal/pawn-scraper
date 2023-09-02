@@ -1,14 +1,14 @@
 ifdef OS
 	TOOLCHAIN = +stable-i686-pc-windows-msvc
-	BINARYNAME = PawnScraper.dll
-	OUPUTNAME = PawnScraper.dll
+	BINARYNAME = pawnscraper.dll
+	OUPUTNAME = pawnscraper.dll
 	CP_RELEASE = cp .\target\release\$(BINARYNAME) .\plugins\$(OUPUTNAME)
 	CP_DEBUG = cp .\target\debug\$(BINARYNAME) .\plugins\$(OUPUTNAME)
 else
 	ifeq ($(shell uname), Linux)
 		TOOLCHAIN = +stable-i686-unknown-linux-gnu
-		BINARYNAME = libPawnScraper.so
-		OUPUTNAME = PawnScraper.so
+		BINARYNAME = libpawnscraper.so
+		OUPUTNAME = pawnscraper.so
 		CP_RELEASE = cp target/release/$(BINARYNAME) plugins/$(OUPUTNAME)
 		CP_DEBUG = cp target/debug/$(BINARYNAME) plugins/$(OUPUTNAME)
 	endif
