@@ -7,7 +7,7 @@
 #endif
 #define _pawnscraper_included
 
-#define PAWN_SCRAPER_VERSION 21
+#define PAWN_SCRAPER_VERSION 22
 #define INVALID_HTML_DOC (Html:-1)
 #define INVALID_SELECTOR (Selector:-1)
 #define INVALID_ATTRIBUTE (-2)

@@ -34,7 +34,7 @@ impl SampPlugin for PawnScraper {
             "
    ###############################################################
    #                      PawnScraper                            #
-   #                      V0.2.1 Loaded!!                        #
+   #                      V0.2.2 Loaded!!                        #
    #   Found any bugs? Report it here:                           #
    #       https://github.com/Sreyas-Sreelal/pawn-scraper/issues #
    #                                                             #
@@ -44,7 +44,7 @@ impl SampPlugin for PawnScraper {
     }
 
     fn on_unload(self: &mut PawnScraper) {
-        info!("PawnScraper V0.2.1 Unloaded!!");
+        info!("PawnScraper V0.2.2 Unloaded!!");
     }
 
     fn on_amx_load(&mut self, amx: &Amx) {
