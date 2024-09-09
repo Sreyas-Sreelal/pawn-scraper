@@ -46,7 +46,7 @@ initialize_plugin!(
             .apply();
 
         PawnScraper {
-            plugin_version: 21,
+            plugin_version: 22,
             html_instance: HashMap::new(),
             selectors: HashMap::new(),
             response_cache: HashMap::new(),
